@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= problem.title %> - Code</title>
+
+  <!-- CodeMirror CSS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/theme/dracula.min.css">
+
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- Font Awesome for Profile Icon -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+  <style>
+    body {
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f0f2f5;
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* Top Branding */
+    .branding {
+      background-color: #343a40;
+      color: white;
+      text-align: center;
+      padding: 10px 0;
+      font-size: 24px;
+      font-weight: bold;
+    }
+
+    /* Navbar */
+    .navbar {
+      background-color: #495057;
+      padding: 10px 20px;
+    }
+    .navbar .nav-link {
+      color: #ffffff;
+      margin-right: 20px;
+    }
+    .navbar .nav-link:hover {
+      color: #00d4ff;
+    }
+    .dropdown-menu {
+      background-color: #495057;
+    }
+    .dropdown-item {
+      color: #ffffff;
+    }
+    .dropdown-item:hover {
+      background-color: #6c757d;
+      color: #00d4ff;
+    }
+
+    /* Main Layout */
+    .main-container {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+    }
+
+    /* Left Panel (Problem Details) */
+    .left-panel {
+      width: 40%;
+      background-color: #ffffff;
+      padding: 20px;
+      overflow-y: auto;
+      border-right: 2px solid #dee2e6;
+      resize: horizontal;
+      min-width: 200px;
+      max-width: 70%;
+    }
+    .left-panel h3 {
+      color: #212529;
+    }
+    .left-panel p {
+      color: #495057;
+    }
+    .example-section, .testcase-section {
+      background-color: #f8f9fa;
+      padding: 15px;
+      border-radius: 5px;
+      margin-bottom: 15px;
+    }
+    .testcase-list {
+      list-style-type: none;
+      padding: 0;
+    }
+    .testcase-list li {
+      margin-bottom: 10px;
+    }
+    .testcase-list strong {
+      color: #333;
+    }
+
+    /* Right Panel (Code Editor + Terminal) */
+    .right-panel {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      background-color: #e9ecef;
+      padding: 20px;
+    }
+    .code-editor-container {
+      flex: 2;
+      min-height: 300px;
+      resize: vertical;
+      overflow: hidden;
+      background-color: #212529;
+      border-radius: 5px;
+      padding: 10px;
+    }
+    .CodeMirror {
+      height: 100%;
+      border: none;
+    }
+    .terminal-container {
+      flex: 1;
+      background-color: #212529;
+      color: #ffffff;
+      padding: 15px;
+      margin-top: 15px;
+      border-radius: 5px;
+      overflow-y: auto;
+      resize: vertical;
+      min-height: 100px;
+    }
+    .terminal-container p {
+      margin: 0;
+    }
+
+    /* Buttons */
+    .button-container {
+      margin-top: 15px;
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+    }
+    .btn-ai {
+      background-color: #17a2b8;
+      color: white;
+    }
+    .btn-ai:hover {
+      background-color: #138496;
+    }
+    .btn-syntax {
+      background-color: #ffc107;
+      color: #212529;
+    }
+    .btn-syntax:hover {
+      background-color: #e0a800;
+    }
+    .btn-run {
+      background-color: #28a745;
+      color: white;
+    }
+    .btn-run:hover {
+      background-color: #218838;
+    }
+    .btn-submit {
+      background-color: #007bff;
+      color: white;
+    }
+    .btn-submit:hover {
+      background-color: #0056b3;
+    }
+
+    /* History Modal */
+    .modal-body pre {
+      background-color: #212529;
+      color: #ffffff;
+      padding: 10px;
+      border-radius: 5px;
+      white-space: pre-wrap;
+    }
+    .history-entry {
+      margin-bottom: 20px;
+      padding: 10px;
+      background-color: #f8f9fa;
+      border-radius: 5px;
+    }
+  </style>
+</head>
+<body>
+  <!-- Top Branding -->
+  <div class="branding">Code</div>
+
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg">
+    <div class="container-fluid">
+      <div class="navbar-nav">
+        <a class="nav-link" href="/problems">Problem Set</a>
+      </div>
+      <div class="navbar-nav ms-auto">
+        <% if (userStatus.loggedIn) { %>
+          <div class="dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="profileDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              <i class="fas fa-user-circle"></i>
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
+              <li><a class="dropdown-item" href="/update-profile">Update Profile</a></li>
+              <li><a class="dropdown-item" href="#" id="showHistory">History</a></li>
+              <li><a class="dropdown-item" href="/logout">Logout</a></li>
+            </ul>
+          </div>
+        <% } else { %>
+          <a class="nav-link" href="/login"><i class="fas fa-user-circle"></i> Sign In</a>
+        <% } %>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Container -->
+  <div class="main-container">
+    <!-- Left Panel: Problem Details -->
+    <div class="left-panel">
+      <h3><%= problem.title %></h3>
+      <p class="mt-3"><%= problem.description %></p>
+
+      <div class="example-section">
+        <h5>Examples:</h5>
+        <ul class="testcase-list">
+          <% problem.examples.forEach(example => { %>
+            <li>
+              <strong>Input:</strong> <%= example.input %>
+              <br><strong>Output:</strong> <%= example.output %>
+            </li>
+          <% }); %>
+        </ul>
+      </div>
+
+      <div class="testcase-section">
+        <h5>Test Cases:</h5>
+        <ul class="testcase-list">
+          <% problem.run_test.forEach(test => { %>
+            <li>
+              <strong>Input:</strong> <%= test.input.join(" ") %>
+              <br><strong>Expected Output:</strong> <%= test.output %>
+            </li>
+          <% }); %>
+        </ul>
+      </div>
+
+      <div class="example-section">
+        <h5>Constraints:</h5>
+        <p><%= problem.constraints %></p>
+      </div>
+    </div>
+
+    <!-- Right Panel: Code Editor + Terminal -->
+    <div class="right-panel">
+      <div class="code-editor-container">
+        <select class="form-select mb-2" id="language" style="width: 150px;">
+          <option value="javascript" <% if (userStatus.language === 'javascript') { %>selected<% } %>>JavaScript</option>
+          <option value="python" <% if (userStatus.language === 'python') { %>selected<% } %>>Python</option>
+          <option value="java" <% if (userStatus.language === 'java') { %>selected<% } %>>Java</option>
+          <option value="cpp" <% if (userStatus.language === 'cpp') { %>selected<% } %>>C++</option>
+          <option value="c" <% if (userStatus.language === 'c') { %>selected<% } %>>C</option>
+        </select>
+        <textarea id="codeEditor"><%= userStatus.code || '' %></textarea>
+      </div>
+
+      <div class="terminal-container" id="terminalOutput">
+        <p>Terminal output will appear here...</p>
+      </div>
+
+      <div class="button-container">
+        <button class="btn btn-ai" id="askAI">Ask AI</button>
+        <button class="btn btn-syntax" id="correctSyntax">Correct Syntax</button>
+        <button class="btn btn-run" id="runCode">Run Code</button>
+        <button class="btn btn-submit" id="submitCode">Submit Code</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- History Modal -->
+  <div class="modal fade" id="historyModal" tabindex="-1" aria-labelledby="historyModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="historyModalLabel">Submission History</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body" id="historyContent">
+          <p>Loading history...</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CodeMirror JS -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/javascript/javascript.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/python/python.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/clike/clike.min.js"></script>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const languageMap = {
+        cpp: { id: 54, defaultCode: "#include <iostream>\nusing namespace std;\n\nint main() {\n\tcout << \"Hello World!\";\n\treturn 0;\n}" },
+        java: { id: 91, defaultCode: `public class Main {\n    public static void main(String[] args) {\n        System.out.println("Hello World!");\n    }\n}` },
+        python: { id: 71, defaultCode: "print(\"Hello World!\")" },
+        javascript: { id: 102, defaultCode: "console.log(\"Hello World!\");" },
+        c: { id: 52, defaultCode: "#include<stdio.h>\nint main()\n{\n    printf(\"Hello World!\");\n    return 0;\n}" },
+      };
+
+      // Initialize CodeMirror
+      const editor = CodeMirror.fromTextArea(document.getElementById("codeEditor"), {
+        mode: "javascript",
+        theme: "dracula",
+        lineNumbers: true,
+      });
+
+      // Set editor mode
+      function setEditorMode(language) {
+        const modeMap = {
+          javascript: "javascript",
+          python: "python",
+          java: "text/x-java",
+          cpp: "text/x-c++src",
+          c: "text/x-csrc",
+        };
+        editor.setOption("mode", modeMap[language] || "javascript");
+      }
+
+      const languageSelect = document.getElementById("language");
+      let currentLanguage = languageSelect.value;
+      setEditorMode(currentLanguage);
+      const userCode = "<%= userStatus.code || '' %>";
+      const initialCode = userCode || languageMap[currentLanguage].defaultCode;
+      editor.setValue(initialCode);
+
+      // Handle language change
+      languageSelect.addEventListener("change", function () {
+        const selectedLanguage = this.value;
+        setEditorMode(selectedLanguage);
+        const currentCode = editor.getValue().trim();
+        const previousDefaultCode = languageMap[currentLanguage].defaultCode.trim();
+        const newDefaultCode = languageMap[selectedLanguage].defaultCode.trim();
+        if (!currentCode || currentCode === previousDefaultCode) {
+          editor.setValue(newDefaultCode);
+        }
+        currentLanguage = selectedLanguage;
+      });
+
+      // Terminal output function
+      function updateTerminal(message) {
+        const terminal = document.getElementById("terminalOutput");
+        terminal.innerHTML = `<p>${message}</p>`;
+      }
+
+      // Ask AI button (placeholder)
+      document.getElementById("askAI").addEventListener("click", function () {
+        updateTerminal("AI assistance not implemented yet.");
+      });
+
+      // Correct Syntax button (placeholder)
+      document.getElementById("correctSyntax").addEventListener("click", function () {
+        updateTerminal("Syntax correction not implemented yet.");
+      });
+
+      // Run Code button
+      document.getElementById("runCode").addEventListener("click", async function () {
+        const code = editor.getValue();
+        const language = languageSelect.value;
+        const problemId = "<%= problem._id %>";
+
+        try {
+          const response = await fetch("/run-code", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ code, language, problemId }),
+          });
+
+          const result = await response.json();
+          if (result.testCaseResults) {
+            let output = result.testCaseResults.map((tc, i) => 
+              `Test Case ${i + 1}: ${tc.passed ? "Passed" : "Failed"}<br>` +
+              `Input: ${tc.input || "N/A"}<br>` +
+              `Expected: ${tc.expectedOutput || "N/A"}<br>` +
+              `Actual: ${tc.actualOutput || "N/A"}<br>` +
+              (tc.error ? `Error: ${tc.error}<br>` : "")
+            ).join("<hr>");
+            updateTerminal(output);
+          } else {
+            updateTerminal("Unknown error occurred: " + JSON.stringify(result));
+          }
+        } catch (error) {
+          updateTerminal("Error running code: " + error.message);
+        }
+      });
+
+      // Submit Code button
+      document.getElementById("submitCode").addEventListener("click", async function () {
+        const code = editor.getValue();
+        const language = languageSelect.value;
+        const userId = "<%= userStatus.userId || '' %>";
+        const problemId = "<%= problem._id %>";
+
+        try {
+          const response = await fetch("/submit-solution", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ code, language, userId, problemId }),
+          });
+
+          const result = await response.json();
+          if (result.testCaseResults) {
+            let output = result.testCaseResults.map((tc, i) => 
+              `Test Case ${i + 1}: ${tc.passed ? "Passed" : "Failed"}<br>` +
+              `Input: ${tc.input || "N/A"}<br>` +
+              `Expected: ${tc.expectedOutput || "N/A"}<br>` +
+              `Actual: ${tc.actualOutput || "N/A"}<br>` +
+              (tc.error ? `Error: ${tc.error}<br>` : "")
+            ).join("<hr>");
+            output += `<br>Submission Status: ${result.submissionStatus || "Unknown"}`;
+            updateTerminal(output);
+          } else {
+            updateTerminal("Unknown error occurred: " + JSON.stringify(result));
+          }
+        } catch (error) {
+          updateTerminal("Error submitting code: " + error.message);
+        }
+      });
+
+      // Show History button
+      document.getElementById("showHistory")?.addEventListener("click", async function () {
+        const userId = "<%= userStatus.userId || '' %>";
+        try {
+          const response = await fetch(`/submission-history?userId=${userId}`, {
+            method: "GET",
+            headers: { "Content-Type": "application/json" },
+          });
+
+          const history = await response.json();
+          const historyContent = document.getElementById("historyContent");
+
+          if (history && history.length > 0) {
+            let historyHtml = "";
+            history.forEach((submission, index) => {
+              const testCaseResults = submission.testCaseResults || [];
+              historyHtml += `
+                <div class="history-entry">
+                  <h6>Submission ${index + 1} - ${new Date(submission.timestamp).toLocaleString()}</h6>
+                  <p><strong>Problem:</strong> ${submission.problemTitle || "Unknown"}</p>
+                  <p><strong>Language:</strong> ${submission.language}</p>
+                  <pre>${submission.code}</pre>
+                  <p><strong>Test Cases:</strong></p>
+                  ${testCaseResults.length > 0 ? testCaseResults.map((tc, i) => `
+                    <p>Test Case ${i + 1}: <span class="${tc.passed ? "text-success" : "text-danger"}">${tc.passed ? "Passed" : "Failed"}</span></p>
+                    <p>Input: ${tc.input || "N/A"}</p>
+                    <p>Expected: ${tc.expectedOutput || "N/A"}</p>
+                    <p>Actual: ${tc.actualOutput || "N/A"}</p>
+                    ${tc.error ? `<p class="text-danger">Error: ${tc.error}</p>` : ""}
+                    <hr>
+                  `).join("") : "<p>No test case results available.</p>"}
+                  <p><strong>Status:</strong> ${submission.submissionStatus || "Unknown"}</p>
+                </div>
+              `;
+            });
+            historyContent.innerHTML = historyHtml;
+          } else {
+            historyContent.innerHTML = "<p>No submission history available.</p>";
+          }
+
+          const modal = new bootstrap.Modal(document.getElementById("historyModal"));
+          modal.show();
+        } catch (error) {
+          document.getElementById("historyContent").innerHTML = `<p class="text-danger">Error loading history: ${error.message}</p>`;
+          const modal = new bootstrap.Modal(document.getElementById("historyModal"));
+          modal.show();
+        }
+      });
+    });
+  </script>
+</body>
+</html>

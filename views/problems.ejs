@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <%- include('partials/head') %>
+  <title>Problem Set - LeetCode Clone</title>
+
+  <!-- CodeMirror CSS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/theme/dracula.min.css">
+</head>
+<body>
+  <%- include('partials/nav') %>
+
+  <main class="container py-5">
+    <h2 class="mb-4">Problem Set</h2>
+    <table class="table table-striped table-hover">
+      <thead class="table-dark">
+        <tr>
+          <th>#</th>
+          <th>Title</th>
+          <th>Difficulty</th>
+          <th>Status</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if (Array.isArray(problems) && problems.length > 0) { %>
+          <% problems.forEach((problem, index) => { %>
+            <tr>
+              <td><%= index + 1 %></td>
+              <td>
+                <a href="/problems/<%= problem._id %>" class="text-decoration-none">
+                  <%= problem.title %>
+                </a>
+              </td>
+              <td>
+                <% if (problem.difficulty === 'Easy') { %>
+                  <span class="badge bg-success">Easy</span>
+                <% } else if (problem.difficulty === 'Medium') { %>
+                  <span class="badge bg-warning text-dark">Medium</span>
+                <% } else { %>
+                  <span class="badge bg-danger">Hard</span>
+                <% } %>
+              </td>
+              <td>
+                <!-- Display user's status for this problem -->
+                <% const userProblem = user?.solvedProblems?.find(p => p.problemId.toString() === problem._id.toString()) || { status: 'NotAttempt' }; %>
+                <% if (userProblem.status === 'Solved') { %>
+                  <span class="text-success">Solved</span>
+                <% } else if (userProblem.status === 'Attempted') { %>
+                  <span class="text-warning">Attempted</span>
+                <% } else { %>
+                  <span class="text-muted">Unsolved</span>
+                <% } %>
+              </td>
+              <td>
+                <a href="/problems/<%= problem._id %>" class="btn btn-primary btn-sm">Solve</a>
+              </td>
+            </tr>
+          <% }); %>
+        <% } else { %>
+          <tr>
+            <td colspan="5" class="text-center">No problems available.</td>
+          </tr>
+        <% } %>
+      </tbody>
+    </table>
+  </main>
+
+  <%- include('partials/scripts') %>
+
+  <!-- CodeMirror JS -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/javascript/javascript.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/python/python.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/clike/clike.min.js"></script>
+
+  <script>
+    // Example CodeMirror usage on this page (optional, can be removed if not needed here)
+    var editor = CodeMirror(document.querySelector(".container"), {
+      value: "// Start coding here...",
+      mode: "javascript",
+      theme: "dracula",
+      lineNumbers: true,
+      readOnly: true, // Prevent editing here, only on problem page
+    });
+  </script>
+</body>
+</html>
