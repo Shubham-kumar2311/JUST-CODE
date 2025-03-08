@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const { createHmac, randomBytes } = require("crypto");
+const Submission = require("./submission");
 
 const userSchema = new mongoose.Schema(
   {
@@ -27,25 +28,15 @@ const userSchema = new mongoose.Schema(
       {
         problemId: {
           type: mongoose.Schema.Types.ObjectId,
-          ref: "Problem",
+          ref: "Problem"
         },
-        status: {
-          type: String,
-          enum: ["Solved", "Attempted", "NotAttempt"],
-          default: "NotAttempt",
-        },
-        language: {
-          type: String,
-        },
-        submissionDate: {
-          type: Date,
-          default: Date.now,
-        },
-        code: {
-          type: String,
-          required: false,
-        },
-      },
+        submissions: [
+          {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Submission"
+          }
+        ]
+      }
     ],
     role: {
       type: String,

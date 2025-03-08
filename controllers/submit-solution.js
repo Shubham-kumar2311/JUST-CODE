@@ -9,7 +9,7 @@ const languageMap = require("../utils/languageMap");
 
 const JUDGE0_URL = 'https://judge0-ce.p.rapidapi.com/submissions?base64_encoded=true&wait=true&fields=*';
 const JUDGE0_HEADERS = {
-    'x-rapidapi-key': '374e4f3f27msh1999f795c200f38p15167djsn2a9b2caf6dd2',
+    'x-rapidapi-key': process.env.JUDGE0_API_KEY,
     'x-rapidapi-host': 'judge0-ce.p.rapidapi.com',
     'Content-Type': 'application/json'
 };
@@ -133,8 +133,6 @@ router.post("/", async (req, res) => {
         // Determine submission status
         const submissionStatus = testCaseResults.every(result => result.passed) ? "Solved" : "Attempted";
 
-
-        console.log(userId)
         // Save submission and update user if userId is provided
         if (userId) {
             const submission = new Submission({
@@ -146,16 +144,14 @@ router.post("/", async (req, res) => {
                 status: submissionStatus,
                 testCaseResults // Store test case results for reference
             });
-            await submission.save();
+            const savedSubmission = await submission.save();
 
             // Update user's solvedProblems
             await User.findByIdAndUpdate(userId, {
                 $push: {
                     solvedProblems: {
                         problemId,
-                        status: submissionStatus,
-                        language,
-                        latestSubmissionId: submission._id
+                        submissions: [submission._id]
                     }
                 }
             });

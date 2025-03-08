@@ -1,8 +1,5 @@
 const express = require("express");
 const Problem = require("../models/problem");
-const User = require("../models/user");
-const Submission = require("../models/submission");
-
 const router = express.Router();
 
 const languageMap = require("../utils/languageMap");
@@ -10,7 +7,7 @@ const languageMap = require("../utils/languageMap");
 const JUDGE0_URL = 'https://judge0-ce.p.rapidapi.com/submissions?base64_encoded=true&wait=true&fields=*';
 
 const JUDGE0_HEADERS = {
-  'x-rapidapi-key': '374e4f3f27msh1999f795c200f38p15167djsn2a9b2caf6dd2',
+  'x-rapidapi-key': process.env.JUDGE0_API_KEY,
   'x-rapidapi-host': 'judge0-ce.p.rapidapi.com',
   'Content-Type': 'application/json'
 };
@@ -90,7 +87,9 @@ router.post("/", async (req, res) => {
           expectedOutput: expectedOutputValue,
           actualOutput: decodedOutput,
           passed,
-          error: result.stderr ? Buffer.from(token.stderr, "base64").toString("utf-8").trim() : null
+          error: token.stderr ? Buffer.from(token.stderr, "base64").toString("utf-8").trim() :  
+              token.compile_output ? Buffer.from(token.stderr, "base64").toString("utf-8").trim() : 
+                token.message || null
         });
       } catch (err) {
         testCaseResults.push({

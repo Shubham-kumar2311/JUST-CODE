@@ -199,7 +199,7 @@
         <a class="nav-link" href="/problems">Problem Set</a>
       </div>
       <div class="navbar-nav ms-auto">
-        <% if (userStatus.loggedIn) { %>
+        <% if (user._id) { %>
           <div class="dropdown">
             <a class="nav-link dropdown-toggle" href="#" id="profileDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
               <i class="fas fa-user-circle"></i>
@@ -264,7 +264,7 @@
           <option value="cpp" <% if (userStatus.language === 'cpp') { %>selected<% } %>>C++</option>
           <option value="c" <% if (userStatus.language === 'c') { %>selected<% } %>>C</option>
         </select>
-        <textarea id="codeEditor"><%= userStatus.code || '' %></textarea>
+        <textarea id="codeEditor"><%= '' %></textarea>
       </div>
 
       <div class="terminal-container" id="terminalOutput">
@@ -334,13 +334,21 @@
           c: "text/x-csrc",
         };
         editor.setOption("mode", modeMap[language] || "javascript");
+        editor.setValue(languageMap[language].defaultCode.trim());
+
       }
 
       const languageSelect = document.getElementById("language");
       let currentLanguage = languageSelect.value;
       setEditorMode(currentLanguage);
       const userCode = "<%= userStatus.code || '' %>";
-      const initialCode = userCode || languageMap[currentLanguage].defaultCode;
+
+      function decodeHTML(html) {
+      const doc = new DOMParser().parseFromString(html, "text/html");
+      return doc.documentElement.textContent;
+      }
+
+      const initialCode = decodeHTML(userCode).slice(1, -1) || languageMap[currentLanguage].defaultCode;
       editor.setValue(initialCode);
 
       // Handle language change
@@ -407,7 +415,7 @@
       document.getElementById("submitCode").addEventListener("click", async function () {
         const code = editor.getValue();
         const language = languageSelect.value;
-        const userId = "<%= userStatus.userId || '' %>";
+        const userId = "<%= user._id || '' %>";
         const problemId = "<%= problem._id %>";
 
         try {
@@ -438,7 +446,7 @@
 
       // Show History button
       document.getElementById("showHistory")?.addEventListener("click", async function () {
-        const userId = "<%= userStatus.userId || '' %>";
+        const userId = "<%= user._id || '' %>";
         try {
           const response = await fetch(`/submission-history?userId=${userId}`, {
             method: "GET",
