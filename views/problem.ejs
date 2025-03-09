@@ -1,9 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title><%= problem.title %> - Code</title>
+  <title>
+    <%= problem.title %> - Code
+  </title>
 
   <!-- CodeMirror CSS -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.css">
@@ -45,15 +48,19 @@
       color: #ffffff;
       margin-right: 20px;
     }
+
     .navbar .nav-link:hover {
       color: #00d4ff;
     }
+
     .dropdown-menu {
       background-color: #495057;
     }
+
     .dropdown-item {
       color: #ffffff;
     }
+
     .dropdown-item:hover {
       background-color: #6c757d;
       color: #00d4ff;
@@ -77,25 +84,32 @@
       min-width: 200px;
       max-width: 70%;
     }
+
     .left-panel h3 {
       color: #212529;
     }
+
     .left-panel p {
       color: #495057;
     }
-    .example-section, .testcase-section {
+
+    .example-section,
+    .testcase-section {
       background-color: #f8f9fa;
       padding: 15px;
       border-radius: 5px;
       margin-bottom: 15px;
     }
+
     .testcase-list {
       list-style-type: none;
       padding: 0;
     }
+
     .testcase-list li {
       margin-bottom: 10px;
     }
+
     .testcase-list strong {
       color: #333;
     }
@@ -108,6 +122,7 @@
       background-color: #e9ecef;
       padding: 20px;
     }
+
     .code-editor-container {
       flex: 2;
       min-height: 300px;
@@ -117,10 +132,12 @@
       border-radius: 5px;
       padding: 10px;
     }
+
     .CodeMirror {
       height: 100%;
       border: none;
     }
+
     .terminal-container {
       flex: 1;
       background-color: #212529;
@@ -132,6 +149,7 @@
       resize: vertical;
       min-height: 100px;
     }
+
     .terminal-container p {
       margin: 0;
     }
@@ -143,31 +161,39 @@
       gap: 10px;
       justify-content: flex-end;
     }
+
     .btn-ai {
       background-color: #17a2b8;
       color: white;
     }
+
     .btn-ai:hover {
       background-color: #138496;
     }
+
     .btn-syntax {
       background-color: #ffc107;
       color: #212529;
     }
+
     .btn-syntax:hover {
       background-color: #e0a800;
     }
+
     .btn-run {
       background-color: #28a745;
       color: white;
     }
+
     .btn-run:hover {
       background-color: #218838;
     }
+
     .btn-submit {
       background-color: #007bff;
       color: white;
     }
+
     .btn-submit:hover {
       background-color: #0056b3;
     }
@@ -180,39 +206,79 @@
       border-radius: 5px;
       white-space: pre-wrap;
     }
+
     .history-entry {
       margin-bottom: 20px;
       padding: 10px;
       background-color: #f8f9fa;
       border-radius: 5px;
     }
+    .terminal-container {
+  flex: 1;
+  background-color: #212529;
+  color: #ffffff;
+  padding: 15px;
+  margin-top: 15px;
+  border-radius: 5px;
+  overflow-y: auto;
+  resize: vertical;
+  min-height: 100px;
+  position: relative;
+}
+
+#copyTerminal {
+  background-color: #6c757d;
+  border: none;
+  padding: 5px 10px;
+  font-size: 12px;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+}
+
+#copyTerminal:hover {
+  background-color: #5a6268;
+}
+
+.terminal-content {
+  margin-right: 80px;
+}
+
+.terminal-content[contenteditable="true"] {
+  outline: none; /* Remove outline when editable */
+}
+
   </style>
 </head>
+
 <body>
   <!-- Top Branding -->
-  <div class="branding">Code</div>
+  <div class="branding">Just Code</div>
 
   <!-- Navbar -->
   <nav class="navbar navbar-expand-lg">
     <div class="container-fluid">
       <div class="navbar-nav">
+        <a class="nav-link" href="/submissions">Submissions</a>
         <a class="nav-link" href="/problems">Problem Set</a>
       </div>
       <div class="navbar-nav ms-auto">
         <% if (user._id) { %>
           <div class="dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="profileDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <a class="nav-link dropdown-toggle" href="#" id="profileDropdown" role="button" data-bs-toggle="dropdown"
+              aria-expanded="false">
               <i class="fas fa-user-circle"></i>
             </a>
             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
+              <li><a class="dropdown-item" href="/me">Me</a></li>
               <li><a class="dropdown-item" href="/update-profile">Update Profile</a></li>
-              <li><a class="dropdown-item" href="#" id="showHistory">History</a></li>
+              <!-- <li><a class="dropdown-item" href="#" id="showHistory">History</a></li> -->
               <li><a class="dropdown-item" href="/logout">Logout</a></li>
             </ul>
           </div>
-        <% } else { %>
-          <a class="nav-link" href="/login"><i class="fas fa-user-circle"></i> Sign In</a>
-        <% } %>
+          <% } else { %>
+            <a class="nav-link" href="/login"><i class="fas fa-user-circle"></i> Sign In</a>
+            <% } %>
       </div>
     </div>
   </nav>
@@ -221,54 +287,76 @@
   <div class="main-container">
     <!-- Left Panel: Problem Details -->
     <div class="left-panel">
-      <h3><%= problem.title %></h3>
-      <p class="mt-3"><%= problem.description %></p>
+      <h3>
+        <%= problem.title %>
+      </h3>
+      <p class="mt-3">
+        <%= problem.description %>
+      </p>
 
       <div class="example-section">
         <h5>Examples:</h5>
         <ul class="testcase-list">
-          <% problem.examples.forEach(example => { %>
+          <% problem.examples.forEach(example=> { %>
             <li>
-              <strong>Input:</strong> <%= example.input %>
-              <br><strong>Output:</strong> <%= example.output %>
+              <strong>Input:</strong>
+              <%= example.input %>
+                <br><strong>Output:</strong>
+                <%= example.output %>
             </li>
-          <% }); %>
+            <% }); %>
         </ul>
       </div>
 
       <div class="testcase-section">
         <h5>Test Cases:</h5>
         <ul class="testcase-list">
-          <% problem.run_test.forEach(test => { %>
+          <% problem.run_test.forEach(test=> { %>
             <li>
-              <strong>Input:</strong> <%= test.input.join(" ") %>
+              <strong>Input:</strong>
+              <%= test.input.join(" ") %>
               <br><strong>Expected Output:</strong> <%= test.output %>
             </li>
           <% }); %>
         </ul>
       </div>
 
-      <div class="example-section">
-        <h5>Constraints:</h5>
-        <p><%= problem.constraints %></p>
+      <div class=" example-section">
+                <h5>Constraints:</h5>
+                <p>
+                  <%= problem.constraints %>
+                </p>
       </div>
+
+      <div class="input-format-section">
+        <h5>Input Format</h5>
+        <p>
+          <%= problem.input_format %>
+        </p>
+      </div>
+
     </div>
 
     <!-- Right Panel: Code Editor + Terminal -->
     <div class="right-panel">
       <div class="code-editor-container">
         <select class="form-select mb-2" id="language" style="width: 150px;">
-          <option value="javascript" <% if (userStatus.language === 'javascript') { %>selected<% } %>>JavaScript</option>
-          <option value="python" <% if (userStatus.language === 'python') { %>selected<% } %>>Python</option>
-          <option value="java" <% if (userStatus.language === 'java') { %>selected<% } %>>Java</option>
-          <option value="cpp" <% if (userStatus.language === 'cpp') { %>selected<% } %>>C++</option>
-          <option value="c" <% if (userStatus.language === 'c') { %>selected<% } %>>C</option>
+          <option value="javascript" <% if (userStatus.language==='javascript' ) { %>selected<% } %>>JavaScript</option>
+          <option value="python" <% if (userStatus.language==='python' ) { %>selected<% } %>>Python</option>
+          <option value="java" <% if (userStatus.language==='java' ) { %>selected<% } %>>Java</option>
+          <option value="cpp" <% if (userStatus.language==='cpp' ) { %>selected<% } %>>C++</option>
+          <option value="c" <% if (userStatus.language==='c' ) { %>selected<% } %>>C</option>
         </select>
         <textarea id="codeEditor"><%= '' %></textarea>
       </div>
 
       <div class="terminal-container" id="terminalOutput">
-        <p>Terminal output will appear here...</p>
+        <div class="terminal-content" id="terminalContent">
+          <p>Terminal output will appear here...</p>
+        </div>
+        <button class="btn btn-sm btn-secondary" id="copyTerminal" title="Copy to clipboard">
+          <i class="fas fa-copy"></i> Copy
+        </button>
       </div>
 
       <div class="button-container">
@@ -281,7 +369,7 @@
   </div>
 
   <!-- History Modal -->
-  <div class="modal fade" id="historyModal" tabindex="-1" aria-labelledby="historyModalLabel" aria-hidden="true">
+  <!-- <div class="modal fade" id="historyModal" tabindex="-1" aria-labelledby="historyModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
       <div class="modal-content">
         <div class="modal-header">
@@ -296,7 +384,7 @@
         </div>
       </div>
     </div>
-  </div>
+  </div> -->
 
   <!-- CodeMirror JS -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.js"></script>
@@ -344,8 +432,8 @@
       const userCode = "<%= userStatus.code || '' %>";
 
       function decodeHTML(html) {
-      const doc = new DOMParser().parseFromString(html, "text/html");
-      return doc.documentElement.textContent;
+        const doc = new DOMParser().parseFromString(html, "text/html");
+        return doc.documentElement.textContent;
       }
 
       const initialCode = decodeHTML(userCode).slice(1, -1) || languageMap[currentLanguage].defaultCode;
@@ -364,20 +452,124 @@
         currentLanguage = selectedLanguage;
       });
 
-      // Terminal output function
-      function updateTerminal(message) {
-        const terminal = document.getElementById("terminalOutput");
-        terminal.innerHTML = `<p>${message}</p>`;
+// Terminal setup
+const terminal = document.getElementById("terminalOutput");
+const terminalContent = document.getElementById("terminalContent");
+let isAskingAI = false;
+
+// Function to update terminal content
+function updateTerminal(message) {
+  terminalContent.contentEditable = false;
+  terminalContent.innerHTML = `<p>${message}</p>`;
+  isAskingAI = false;
+}
+
+// Function to enable terminal input
+function enableTerminalInput() {
+  terminalContent.contentEditable = true;
+  terminalContent.innerHTML = '<p id="placeholder" style="color: gray; opacity: 0.6;">Type your query here and press Enter...</p>';
+  terminalContent.focus();
+  isAskingAI = true;
+
+  terminalContent.addEventListener("input", function removePlaceholder() {
+    let placeholder = document.getElementById("placeholder");
+    if (placeholder) {
+      placeholder.remove();
+    }
+    terminalContent.removeEventListener("input", removePlaceholder);
+  }, { once: true });
+}
+
+// Initial terminal state
+updateTerminal("Terminal output will appear here...");
+
+// Ask AI button
+document.getElementById("askAI").addEventListener("click", function () {
+  enableTerminalInput();
+});
+
+// Handle Enter key in terminal for AI queries
+terminalContent.addEventListener("keydown", async function (event) {
+  if (isAskingAI && event.key === "Enter") {
+    event.preventDefault();
+    const query = terminalContent.textContent.trim();
+    if (query && query !== "Type your query here and press Enter...") {
+      updateTerminal("Processing your query...");
+
+      try {
+        const code = editor.getValue();
+        const language = languageSelect.value;
+        const problemDescription = "<%= problem.description %>";
+
+        const response = await fetch("/ai/ask-ai", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ code, language, problemDescription, query }),
+        });
+
+        const result = await response.json();
+        if (result.success) {
+          updateTerminal(result.suggestion || "No suggestion provided");
+        } else if (result.error === "server is busy") {
+          updateTerminal("The server is busy right now. Please try again in a few moments.");
+        } else {
+          updateTerminal("Error getting AI assistance: " + (result.error || "Unknown error"));
+        }
+      } catch (error) {
+        updateTerminal("Error communicating with AI service: " + error.message);
       }
+    }
+  }
+});
 
-      // Ask AI button (placeholder)
-      document.getElementById("askAI").addEventListener("click", function () {
-        updateTerminal("AI assistance not implemented yet.");
+// Copy Terminal button
+document.getElementById("copyTerminal").addEventListener("click", function () {
+  const contentToCopy = terminalContent.textContent.trim();
+  if (contentToCopy) {
+    navigator.clipboard.writeText(contentToCopy)
+      .then(() => {
+        const originalText = this.innerHTML;
+        this.innerHTML = '<i class="fas fa-check"></i> Copied!';
+        setTimeout(() => {
+          this.innerHTML = '<i class="fas fa-copy"></i> Copy';
+        }, 2000);
+      })
+      .catch(err => {
+        updateTerminal("Failed to copy: " + err.message);
       });
+  } else {
+    updateTerminal("Nothing to copy!");
+  }
+});
 
-      // Correct Syntax button (placeholder)
-      document.getElementById("correctSyntax").addEventListener("click", function () {
-        updateTerminal("Syntax correction not implemented yet.");
+      // Correct Syntax button
+      document.getElementById("correctSyntax").addEventListener("click", async function () {
+        const code = editor.getValue();
+        const language = languageSelect.value;
+
+        try {
+          updateTerminal("Checking and correcting syntax using AI...");
+
+          const response = await fetch("/ai/correct-syntax", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ code, language }),
+          });
+
+          const result = await response.json();
+          if (result.success) {
+            if (result.correctedCode) {
+              editor.setValue(result.correctedCode);
+              updateTerminal("Syntax corrected successfully using AI!");
+            } else {
+              updateTerminal("No syntax errors found in the code!");
+            }
+          } else {
+            updateTerminal("Error correcting syntax: " + (result.error || "Unknown error"));
+          }
+        } catch (error) {
+          updateTerminal("Error communicating with syntax checker: " + error.message);
+        }
       });
 
       // Run Code button
@@ -395,7 +587,7 @@
 
           const result = await response.json();
           if (result.testCaseResults) {
-            let output = result.testCaseResults.map((tc, i) => 
+            let output = result.testCaseResults.map((tc, i) =>
               `Test Case ${i + 1}: ${tc.passed ? "Passed" : "Failed"}<br>` +
               `Input: ${tc.input || "N/A"}<br>` +
               `Expected: ${tc.expectedOutput || "N/A"}<br>` +
@@ -427,7 +619,7 @@
 
           const result = await response.json();
           if (result.testCaseResults) {
-            let output = result.testCaseResults.map((tc, i) => 
+            let output = result.testCaseResults.map((tc, i) =>
               `Test Case ${i + 1}: ${tc.passed ? "Passed" : "Failed"}<br>` +
               `Input: ${tc.input || "N/A"}<br>` +
               `Expected: ${tc.expectedOutput || "N/A"}<br>` +

@@ -10,6 +10,7 @@ const userRoute = require("./routes/user");
 const problemsRoute = require("./routes/problems");
 const runCodeRoute = require("./controllers/run-route");
 const submitSolution = require("./controllers/submit-solution");
+const AIroute = require("./routes/aiRoutes")
 
 const app = express();
 const PORT = process.env.PORT || 8001;
@@ -36,6 +37,7 @@ app.use("/", staticRoute);
 app.use("/user", userRoute);
 app.use("/run-code", runCodeRoute);
 app.use("/submit-solution", submitSolution);
+app.use("/ai", AIroute);
 
 // Error handling middleware
 app.use((err, req, res, next) => {
