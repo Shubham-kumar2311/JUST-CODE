@@ -43,7 +43,7 @@ const options = {
     port: null,
     path: '/o3mini',
     headers: {
-        'x-rapidapi-key': 'd553617f06mshd593462da4bb13cp10bc29jsne045fda800e3', // Replace with your RapidAPI key
+        'x-rapidapi-key': process.env.OPENAI_API_KEY,
         'x-rapidapi-host': 'chatgpt-42.p.rapidapi.com',
         'Content-Type': 'application/json',
     },

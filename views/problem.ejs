@@ -339,6 +339,10 @@
         font-size: 0.8rem;
       }
     }
+    p {
+        white-space: pre-line;
+      }
+
   </style>
 </head>
 
@@ -366,20 +370,24 @@
         <h5>Test Cases:</h5>
         <ul class="testcase-list">
           <% problem.run_test.forEach(test => { %>
-            <li><strong>Input:</strong> <%= test.input.join(" ") %><br><strong>Expected Output:</strong> <%= test.output %></li>
+            <li>
+              <strong>Input:</strong> <%= test.input.join(" ") %><br>
+              <strong>Expected Output:</strong> <%= test.output %>
+            </li>
           <% }); %>
         </ul>
       </div>
+      
 
       <div class="example-section">
         <h5>Constraints:</h5>
         <p><%= problem.constraints %></p>
       </div>
 
-      <% if (problem.input_format) { %>
+      <% if (problem.input_form) { %>
       <div class="input-format-section">
         <h5>Input Format:</h5>
-        <p><%= problem.input_format %></p>
+        <p><%= problem.input_form %></p>
       </div>
       <% } %>
     </div>

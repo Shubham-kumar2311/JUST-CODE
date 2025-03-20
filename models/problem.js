@@ -41,7 +41,7 @@ const problemSchema = new mongoose.Schema(
     run_test: [
       {
         input: {
-          type: [Number], // Array of numbers for space-separated input
+          type: [String], // Array of numbers for space-separated input
           required: true,
         },
         output: {
@@ -54,7 +54,7 @@ const problemSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    input_fomat: {
+    input_form: {
       type: String,
       required: true,
     },
