@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <%- include('partials/head') %>
+  <title>Update Profile - JUST CODE</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Inter', sans-serif;
+    }
+
+    body {
+      background: linear-gradient(135deg, #1e1e1e 0%, #2a2a2a 100%);
+      color: #fff;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .update-container {
+      max-width: 500px;
+      width: 100%;
+      margin: 2rem auto;
+      padding: 2rem;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 10px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    }
+
+    .update-header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    .update-header h1 {
+      font-size: 2rem;
+      color: #ff4d4d;
+      margin-bottom: 0.5rem;
+    }
+
+    .update-header p {
+      color: #bbb;
+      font-size: 1rem;
+    }
+
+    .update-form {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .form-group label {
+      font-size: 1rem;
+      color: #fff;
+      font-weight: 500;
+    }
+
+    .form-group input {
+      padding: 0.75rem;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 5px;
+      background: rgba(255, 255, 255, 0.05);
+      color: #fff;
+      font-size: 1rem;
+      transition: border-color 0.3s ease;
+    }
+
+    .form-group input:focus {
+      outline: none;
+      border-color: #ff4d4d;
+    }
+
+    .form-group input.invalid {
+      border-color: #ff4d4d;
+      background: rgba(255, 77, 77, 0.1);
+    }
+
+    .error-message {
+      color: #ff4d4d;
+      font-size: 0.85rem;
+      margin-top: -0.25rem;
+      display: none;
+    }
+
+    .error-message.active {
+      display: block;
+    }
+
+    .btn-custom {
+      padding: 0.75rem;
+      border-radius: 50px;
+      font-size: 1rem;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      border: none;
+      background: #ff4d4d;
+      color: #fff;
+      cursor: pointer;
+      text-align: center;
+    }
+
+    .btn-custom:hover {
+      background: #e03e3e;
+    }
+
+    .success-message {
+      text-align: center;
+      color: #28a745;
+      font-size: 1rem;
+      margin-top: 1rem;
+      display: none;
+    }
+
+    .success-message.active {
+      display: block;
+    }
+
+    .back-link {
+      text-align: center;
+      margin-top: 1rem;
+    }
+
+    .back-link a {
+      color: #ff4d4d;
+      text-decoration: none;
+      font-size: 0.9rem;
+      transition: color 0.3s ease;
+    }
+
+    .back-link a:hover {
+      color: #e03e3e;
+    }
+
+    @media (max-width: 576px) {
+      .update-container {
+        margin: 1rem;
+        padding: 1.5rem;
+      }
+
+      .update-header h1 {
+        font-size: 1.5rem;
+      }
+
+      .form-group input {
+        padding: 0.5rem;
+        font-size: 0.9rem;
+      }
+
+      .btn-custom {
+        padding: 0.5rem;
+        font-size: 0.9rem;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <%- include('partials/nav') %>
+
+  <div class="update-container">
+    <div class="update-header">
+      <h1>Update Profile</h1>
+      <p>Modify your account details below</p>
+    </div>
+
+    <form class="update-form" action="/user/updateProfile" method="POST">
+      <div class="form-group">
+        <label for="username">Username</label>
+        <input type="text" id="username" name="username" value="<%= user.username || '' %>" placeholder="Enter new username">
+        <p class="error-message" id="username-error">Username must be at least 3 characters long</p>
+      </div>
+
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" value="<%= user.email || '' %>" placeholder="Enter new email">
+        <p class="error-message" id="email-error">Invalid email format</p>
+      </div>
+
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" placeholder="Enter new password">
+        <p class="error-message" id="password-error">Password must be at least 6 characters long</p>
+      </div>
+
+      <% if (typeof error !== 'undefined') { %>
+        <p class="error-message active"><%= error %></p>
+      <% } %>
+
+      <button type="submit" class="btn-custom">Save Changes</button>
+    </form>
+
+    <p class="success-message" id="success-message">Profile updated successfully!</p>
+    <div class="back-link">
+      <a href="/user/profile">Back to Profile</a>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const form = document.querySelector(".update-form");
+      const usernameInput = document.querySelector("#username");
+      const emailInput = document.querySelector("#email");
+      const passwordInput = document.querySelector("#password");
+      const usernameError = document.querySelector("#username-error");
+      const emailError = document.querySelector("#email-error");
+      const passwordError = document.querySelector("#password-error");
+      const successMessage = document.querySelector("#success-message");
+
+      form.addEventListener("submit", function (e) {
+        let isValid = true;
+
+        // Reset error states
+        usernameInput.classList.remove("invalid");
+        emailInput.classList.remove("invalid");
+        passwordInput.classList.remove("invalid");
+        usernameError.classList.remove("active");
+        emailError.classList.remove("active");
+        passwordError.classList.remove("active");
+
+        // Username validation
+        if (usernameInput.value.trim() && usernameInput.value.trim().length < 3) {
+          isValid = false;
+          usernameInput.classList.add("invalid");
+          usernameError.classList.add("active");
+        }
+
+        // Email validation
+        if (emailInput.value.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailInput.value.trim())) {
+          isValid = false;
+          emailInput.classList.add("invalid");
+          emailError.classList.add("active");
+        }
+
+        // Password validation
+        if (passwordInput.value.trim() && passwordInput.value.trim().length < 6) {
+          isValid = false;
+          passwordInput.classList.add("invalid");
+          passwordError.classList.add("active");
+        }
+
+        if (!isValid) {
+          e.preventDefault(); // Prevent form submission if invalid
+        }
+      });
+
+      // Show success message if redirected with success query
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.get("success") === "true") {
+        successMessage.classList.add("active");
+        setTimeout(() => {
+          successMessage.classList.remove("active");
+        }, 3000); // Hide after 3 seconds
+      }
+    });
+  </script>
+</body>
+</html>

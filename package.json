@@ -1,10 +1,11 @@
 {
-  "name": "leet-code",
+  "name": "justcode",
   "version": "1.0.0",
   "description": "A LeetCode clone for practicing coding problems",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon index.js"
+    "start": "node app.js",
+    "dev": "nodemon app.js"
   },
   "author": "",
   "license": "ISC",
@@ -21,6 +22,7 @@
     "nodemon": "^3.1.9",
     "openai": "^4.86.2",
     "prettier": "^3.5.3",
-    "prettier-plugin-java": "^2.6.7"
+    "prettier-plugin-java": "^2.6.7",
+    "serve-favicon": "^2.5.0"
   }
 }

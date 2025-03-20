@@ -54,6 +54,10 @@ const problemSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    input_fomat: {
+      type: String,
+      required: true,
+    },
   },
   { timestamps: true }
 );

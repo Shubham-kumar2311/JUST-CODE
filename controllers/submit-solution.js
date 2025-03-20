@@ -147,14 +147,22 @@ router.post("/", async (req, res) => {
             const savedSubmission = await submission.save();
 
             // Update user's solvedProblems
-            await User.findByIdAndUpdate(userId, {
-                $push: {
-                    solvedProblems: {
-                        problemId,
-                        submissions: [submission._id]
-                    }
-                }
-            });
+            const user = await User.findById(userId);
+            const problemExists = user.solvedProblems.some(p => p.problemId.toString() === problemId.toString());
+
+            if (problemExists) {
+                // Append submission to existing problem
+                await User.updateOne(
+                    { _id: userId, "solvedProblems.problemId": problemId },
+                    { $push: { "solvedProblems.$.submissions": savedSubmission._id } }
+                );
+            } else {
+                // Add new problem entry
+                await User.updateOne(
+                    { _id: userId },
+                    { $push: { solvedProblems: { problemId, submissions: [savedSubmission._id] } } }
+                );
+            }
         }
 
         // Send response to frontend

@@ -1,88 +1,472 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <%- include('partials/head') %>
-  <title>Problem Set - LeetCode Clone</title>
+  <title>Problem Set - JUST CODE</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Inter', sans-serif;
+    }
 
-  <!-- CodeMirror CSS -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/theme/dracula.min.css">
+    body {
+      background: linear-gradient(135deg, #1e1e1e 0%, #2a2a2a 100%);
+      color: #fff;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem 1rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .main-content {
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
+      max-width: 1200px;
+      gap: 2rem;
+    }
+
+    .left-section {
+      flex: 1;
+      max-width: 800px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .header-section {
+      text-align: center;
+      margin-bottom: 2.5rem;
+    }
+
+    .header-section h2 {
+      font-size: 2.5rem;
+      font-weight: 800;
+      color: #ff4d4d;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 0.5rem;
+      background: linear-gradient(90deg, #ff4d4d, #ff8787);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .header-section p {
+      font-size: 1rem;
+      color: #bbb;
+    }
+
+    .stats-section {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      padding: 1rem;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 10px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+      width: 200px;
+      align-self: flex-start;
+    }
+
+    .stats-card {
+      text-align: center;
+      padding: 0.75rem;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.1);
+      transition: transform 0.3s ease;
+    }
+
+    .stats-card:hover {
+      transform: translateY(-5px);
+    }
+
+    .stats-card h3 {
+      font-size: 1rem;
+      margin-bottom: 0.3rem;
+    }
+
+    .stats-card p {
+      font-size: 0.9rem;
+      color: #ccc;
+      font-weight: 800; /* Bold all counts */
+    }
+
+    .easy {
+      color: #28a745;
+    }
+
+    .medium {
+      color: #f0ad4e;
+    }
+
+    .hard {
+      color: #dc3545;
+    }
+
+    .search-section {
+      margin-bottom: 2.5rem;
+      width: 100%;
+      max-width: 500px;
+    }
+
+    .search-input {
+      width: 100%;
+      padding: 0.75rem 1.5rem;
+      border: none;
+      border-radius: 50px;
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+      font-size: 1rem;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+      transition: background 0.3s ease;
+    }
+
+    .search-input::placeholder {
+      color: #aaa;
+    }
+
+    .search-input:focus {
+      outline: none;
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .problem-table {
+      width: 100%;
+      max-width: 800px;
+      border-collapse: collapse;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    }
+
+    .problem-table th,
+    .problem-table td {
+      padding: 1.25rem;
+      text-align: left;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .problem-table th {
+      background: linear-gradient(90deg, #ff4d4d, #ff8787);
+      color: #fff;
+      font-weight: 600;
+      text-transform: uppercase;
+      font-size: 0.9rem;
+    }
+
+    .problem-table tr {
+      transition: background 0.3s ease;
+    }
+
+    .problem-table tr:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .problem-table a {
+      color: #ff4d4d;
+      text-decoration: none;
+      transition: color 0.3s ease;
+    }
+
+    .problem-table a:hover {
+      color: #e03e3e;
+    }
+
+    .badge {
+      padding: 0.5rem 1rem;
+      border-radius: 20px;
+      font-size: 0.9rem;
+    }
+
+    .badge-easy {
+      background: #28a745;
+    }
+
+    .badge-medium {
+      background: #f0ad4e;
+      color: #1a1a1a;
+    }
+
+    .badge-hard {
+      background: #dc3545;
+    }
+
+    .solve-btn {
+      background: #a94938; /* Solid, brighter red for better visibility */
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 50px;
+      color: #fff;
+      font-weight: 600;
+      font-size: 0.9rem;
+      transition: transform 0.3s ease, opacity 0.3s ease;
+    }
+
+    .solve-btn:hover {
+      opacity: 0.9;
+      transform: translateY(-2px);
+      background: #e05555; /* Slightly darker on hover */
+    }
+
+    .status {
+      font-weight: 600;
+      padding: 0.25rem 0.75rem;
+      border-radius: 15px;
+      display: inline-block;
+      min-width: 100px;
+      text-align: center;
+    }
+
+    .text-success {
+      color: #28a745;
+      background: rgba(40, 167, 69, 0.1);
+    }
+
+    .text-warning {
+      color: #f0ad4e;
+      background: rgba(240, 173, 78, 0.1);
+    }
+
+    .text-muted {
+      color: #e0e0e0;
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    /* Responsive Design */
+    @media (max-width: 1024px) {
+      .main-content {
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .stats-section {
+        width: 100%;
+        max-width: 400px;
+        margin-top: 2rem;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .header-section h2 {
+        font-size: 2rem;
+      }
+
+      .stats-section {
+        flex-direction: row;
+        gap: 1rem;
+        justify-content: center;
+      }
+
+      .stats-card {
+        padding: 0.5rem;
+      }
+
+      .problem-table th,
+      .problem-table td {
+        padding: 0.75rem;
+        font-size: 0.9rem;
+      }
+
+      .status {
+        min-width: 80px;
+      }
+    }
+
+    @media (max-width: 576px) {
+      .header-section h2 {
+        font-size: 1.8rem;
+      }
+
+      .search-input {
+        padding: 0.5rem 1rem;
+        font-size: 0.9rem;
+      }
+
+      .stats-section {
+        flex-direction: column;
+      }
+
+      .stats-card {
+        padding: 0.5rem;
+      }
+
+      .problem-table th,
+      .problem-table td {
+        padding: 0.5rem;
+        font-size: 0.8rem;
+      }
+
+      .solve-btn {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.8rem;
+      }
+
+      .status {
+        min-width: 70px;
+      }
+    }
+  </style>
 </head>
+
 <body>
   <%- include('partials/nav') %>
 
-  <main class="container py-5">
-    <h2 class="mb-4">Problem Set</h2>
-    <table class="table table-striped table-hover">
-      <thead class="table-dark">
-        <tr>
-          <th>#</th>
-          <th>Title</th>
-          <th>Difficulty</th>
-          <th>Status</th>
-          <th>Action</th>
-        </tr>
-      </thead>
-      <tbody>
-        <% if (Array.isArray(problems) && problems.length > 0) { %>
-          <% problems.forEach((problem, index) => { %>
+  <main class="container">
+    <div class="main-content">
+      <!-- Left Section: Problems -->
+      <div class="left-section">
+        <!-- Header Section -->
+        <div class="header-section">
+          <h2>Problem Set</h2>
+          <p>Explore and solve coding challenges to enhance your skills.</p>
+        </div>
+
+        <!-- Search Section -->
+        <div class="search-section">
+          <input type="text" id="searchInput" class="search-input" placeholder="Search by problem ID or title...">
+        </div>
+
+        <!-- Problem Table -->
+        <table class="problem-table">
+          <thead>
             <tr>
-              <td><%= index + 1 %></td>
-              <td>
-                <a href="/problems/<%= problem._id %>" class="text-decoration-none">
-                  <%= problem.title %>
-                </a>
-              </td>
-              <td>
-                <% if (problem.difficulty === 'Easy') { %>
-                  <span class="badge bg-success">Easy</span>
-                <% } else if (problem.difficulty === 'Medium') { %>
-                  <span class="badge bg-warning text-dark">Medium</span>
-                <% } else { %>
-                  <span class="badge bg-danger">Hard</span>
-                <% } %>
-              </td>
-              <td>
-                <!-- Display user's status for this problem -->
-                <% const userProblem = user?.solvedProblems?.find(p => p.problemId.toString() === problem._id.toString()) || { status: 'NotAttempt' }; %>
-                <% if (userProblem.status === 'Solved') { %>
-                  <span class="text-success">Solved</span>
-                <% } else if (userProblem.status === 'Attempted') { %>
-                  <span class="text-warning">Attempted</span>
-                <% } else { %>
-                  <span class="text-muted">Unsolved</span>
-                <% } %>
-              </td>
-              <td>
-                <a href="/problems/<%= problem._id %>" class="btn btn-primary btn-sm">Solve</a>
-              </td>
+              <th>Problem ID</th>
+              <th>Title</th>
+              <th>Difficulty</th>
+              <th>Status</th>
+              <th>Action</th>
             </tr>
-          <% }); %>
-        <% } else { %>
-          <tr>
-            <td colspan="5" class="text-center">No problems available.</td>
-          </tr>
-        <% } %>
-      </tbody>
-    </table>
+          </thead>
+          <tbody id="problemTableBody">
+            <% if (Array.isArray(problems) && problems.length > 0) { %>
+              <% const sortedProblems = [...problems].sort((a, b) => {
+                  const idA = a.id ? a.id.toString() : '';
+                  const idB = b.id ? b.id.toString() : '';
+                  return isNaN(idA) || isNaN(idB) ? idA.localeCompare(idB) : Number(idA) - Number(idB);
+                });
+              %>
+              <% sortedProblems.forEach((problem) => { %>
+                <tr class="problem-row">
+                  <td><%= problem.id || 'N/A' %></td>
+                  <td><a href="/problems/<%= problem._id %>"><%= problem.title %></a></td>
+                  <td>
+                    <% if (problem.difficulty === 'Easy') { %>
+                      <span class="badge badge-easy">Easy</span>
+                    <% } else if (problem.difficulty === 'Medium') { %>
+                      <span class="badge badge-medium">Medium</span>
+                    <% } else { %>
+                      <span class="badge badge-hard">Hard</span>
+                    <% } %>
+                  </td>
+                  <td>
+                    <% const userProblem = user?.solvedProblems?.find((p) => p.problemId.toString() === problem._id.toString());
+                      const latestSubmission = userProblem?.submissions.length > 0
+                        ? userProblem.submissions[userProblem.submissions.length - 1]
+                        : null;
+                      const status = latestSubmission ? latestSubmission.status : 'NotAttempted';
+                    %>
+                    <% if (status === 'Solved') { %>
+                      <span class="status text-success">Solved</span>
+                    <% } else if (status === 'Attempted') { %>
+                      <span class="status text-warning">Attempted</span>
+                    <% } else { %>
+                      <span class="status text-muted">Not Attempted</span>
+                    <% } %>
+                  </td>
+                  <td>
+                    <a href="/problems/<%= problem._id %>" class="solve-btn">Solve</a>
+                  </td>
+                </tr>
+              <% }); %>
+            <% } else { %>
+              <tr>
+                <td colspan="5" class="text-center">No problems available.</td>
+              </tr>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Right Section: Stats -->
+      <div class="stats-section">
+        <% const easyTotal = problems.filter(p => p.difficulty === 'Easy').length;
+          const mediumTotal = problems.filter(p => p.difficulty === 'Medium').length;
+          const hardTotal = problems.filter(p => p.difficulty === 'Hard').length;
+
+          let easySolved = 0;
+          let mediumSolved = 0;
+          let hardSolved = 0;
+
+          if (user?.solvedProblems) {
+            user.solvedProblems.forEach((p) => {
+              const problem = problems.find(prob => prob._id.toString() === p.problemId.toString());
+              if (!problem) return;
+
+              const latestSubmission = p.submissions.length > 0
+                ? p.submissions[p.submissions.length - 1]
+                : null;
+
+              if (latestSubmission?.status === 'Solved') {
+                switch (problem.difficulty) {
+                  case 'Easy':
+                    easySolved++;
+                    break;
+                  case 'Medium':
+                    mediumSolved++;
+                    break;
+                  case 'Hard':
+                    hardSolved++;
+                    break;
+                }
+              }
+            });
+          }
+        %>
+
+        <div class="stats-card">
+          <h3 class="easy">Easy</h3>
+          <p><%= easySolved %> / <%= easyTotal %></p>
+        </div>
+        <div class="stats-card">
+          <h3 class="medium">Medium</h3>
+          <p><%= mediumSolved %> / <%= mediumTotal %></p>
+        </div>
+        <div class="stats-card">
+          <h3 class="hard">Hard</h3>
+          <p><%= hardSolved %> / <%= hardTotal %></p>
+        </div>
+      </div>
+    </div>
   </main>
 
   <%- include('partials/scripts') %>
 
-  <!-- CodeMirror JS -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/javascript/javascript.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/python/python.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/clike/clike.min.js"></script>
-
+  <!-- Search Functionality -->
   <script>
-    // Example CodeMirror usage on this page (optional, can be removed if not needed here)
-    var editor = CodeMirror(document.querySelector(".container"), {
-      value: "// Start coding here...",
-      mode: "javascript",
-      theme: "dracula",
-      lineNumbers: true,
-      readOnly: true, // Prevent editing here, only on problem page
+    const searchInput = document.getElementById('searchInput');
+    const problemRows = document.querySelectorAll('.problem-row');
+
+    searchInput.addEventListener('input', function () {
+      const searchTerm = this.value.toLowerCase();
+      problemRows.forEach(row => {
+        const problemId = row.querySelector('td:nth-child(1)').textContent.toLowerCase();
+        const problemTitle = row.querySelector('td:nth-child(2)').textContent.toLowerCase();
+        if (problemId.includes(searchTerm) || problemTitle.includes(searchTerm)) {
+          row.style.display = '';
+        } else {
+          row.style.display = 'none';
+        }
+      });
     });
   </script>
 </body>

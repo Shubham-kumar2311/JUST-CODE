@@ -1,5 +1,5 @@
 const express = require("express");
-const { handleUserSignup, handleUserLogin } = require("../controllers/user");
+const { handleUserSignup, handleUserLogin, getUserProfile, updateUserProfile, getUpdateProfile } = require("../controllers/user");
 
 const router = express.Router();
 
@@ -12,7 +12,11 @@ router.post("/login", handleUserLogin);
 // GET /user/logout
 router.get("/logout", (req, res) => {
   res.clearCookie("uid");
-  res.redirect("/login");
+  res.redirect("/");
 });
 
+
+router.get("/profile", getUserProfile);
+router.get("/updateProfile", getUpdateProfile);
+router.post("/updateProfile", updateUserProfile);
 module.exports = router;

@@ -1,18 +1,26 @@
+const languageMap = require("../utils/languageMap");
 const express = require("express");
 const mongoose = require("mongoose");
 const Problem = require("../models/problem");
 const Submission = require("../models/submission");
-const languageMap = require("../utils/languageMap");
 const User = require("../models/user");
-const submission = require("../models/submission");
 
 const router = express.Router();
 
 // GET /problems - list all
 router.get("/", async (req, res) => {
   try {
+    // Fetch all problems
     const problems = await Problem.find({});
-    return res.render("problems", { problems, user: req.user });
+
+    // Fetch user with populated solvedProblems.submissions if logged in
+    const user = req.user ? await User.findById(req.user._id).populate('solvedProblems.submissions') : null;
+
+    // Fetch user's submissions if logged in
+    const submissions = user ? await Submission.find({ userId: user._id }).sort({ submittedAt: -1 }) : [];
+
+    // Render problems.ejs with problems, user, and submissions
+    return res.render("problems", { problems, user, submissions });
   } catch (error) {
     console.error("Error fetching problems:", error);
     return res.status(500).send("An error occurred while fetching problems.");

@@ -2,103 +2,70 @@
 <html lang="en">
 
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>
-    <%= problem.title %> - Code
-  </title>
-
+  <%- include('partials/head') %>
+  <title><%= problem.title %> - JUST CODE</title>
   <!-- CodeMirror CSS -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/theme/dracula.min.css">
-
-  <!-- Bootstrap CSS -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-
-  <!-- Font Awesome for Profile Icon -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/theme/monokai.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/addon/hint/show-hint.min.css">
 
   <style>
-    body {
-      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-      background-color: #f0f2f5;
+    * {
       margin: 0;
-      height: 100vh;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Inter', sans-serif;
+    }
+
+    body {
+      background: linear-gradient(135deg, #1e1e1e 0%, #2a2a2a 100%);
+      color: #fff;
+      min-height: 100vh;
       display: flex;
       flex-direction: column;
-      overflow: hidden;
     }
 
-    /* Top Branding */
-    .branding {
-      background-color: #343a40;
-      color: white;
-      text-align: center;
-      padding: 10px 0;
-      font-size: 24px;
-      font-weight: bold;
-    }
-
-    /* Navbar */
-    .navbar {
-      background-color: #495057;
-      padding: 10px 20px;
-    }
-    .navbar .nav-link {
-      color: #ffffff;
-      margin-right: 20px;
-    }
-
-    .navbar .nav-link:hover {
-      color: #00d4ff;
-    }
-
-    .dropdown-menu {
-      background-color: #495057;
-    }
-
-    .dropdown-item {
-      color: #ffffff;
-    }
-
-    .dropdown-item:hover {
-      background-color: #6c757d;
-      color: #00d4ff;
-    }
-
-    /* Main Layout */
     .main-container {
+      max-width: 1400px;
+      margin: 2rem auto;
+      padding: 0 1rem;
       display: flex;
+      gap: 2rem;
       flex: 1;
-      overflow: hidden;
     }
 
-    /* Left Panel (Problem Details) */
     .left-panel {
-      width: 40%;
-      background-color: #ffffff;
-      padding: 20px;
+      flex: 1;
+      background: rgba(255, 255, 255, 0.05);
+      padding: 2rem;
+      border-radius: 10px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
       overflow-y: auto;
-      border-right: 2px solid #dee2e6;
-      resize: horizontal;
-      min-width: 200px;
-      max-width: 70%;
     }
 
-    .left-panel h3 {
-      color: #212529;
+    .left-panel .problem-header {
+      margin-bottom: 1rem;
+    }
+
+    .left-panel .problem-header strong {
+      font-size: 2rem;
+      font-weight: 800;
+      color: #ff4d4d;
     }
 
     .left-panel p {
-      color: #495057;
+      color: #bbb;
+      line-height: 1.6;
+      font-size: 1rem;
     }
 
     .example-section,
-    .testcase-section {
-      background-color: #f8f9fa;
-      padding: 15px;
-      border-radius: 5px;
-      margin-bottom: 15px;
+    .testcase-section,
+    .input-format-section {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 1rem;
+      border-radius: 8px;
+      margin-bottom: 1.5rem;
     }
 
     .testcase-list {
@@ -107,339 +74,443 @@
     }
 
     .testcase-list li {
-      margin-bottom: 10px;
+      margin-bottom: 1rem;
+      font-size: 0.95rem;
     }
 
     .testcase-list strong {
-      color: #333;
+      color: #fff;
     }
 
-    /* Right Panel (Code Editor + Terminal) */
     .right-panel {
-      flex: 1;
+      flex: 2;
       display: flex;
       flex-direction: column;
-      background-color: #e9ecef;
-      padding: 20px;
+      gap: 1rem;
     }
 
     .code-editor-container {
-      flex: 2;
-      min-height: 300px;
-      resize: vertical;
+      background: #212529;
+      border-radius: 10px;
+      padding: 1rem;
+      flex: 3;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+      position: relative;
+      max-height: 600px;
+      display: flex;
+      flex-direction: column;
       overflow: hidden;
-      background-color: #212529;
-      border-radius: 5px;
-      padding: 10px;
+    }
+
+    .editor-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
     }
 
     .CodeMirror {
-      height: 100%;
-      border: none;
+      flex: 1;
+      border-radius: 5px;
+      height: auto;
+    }
+
+    .CodeMirror-scroll {
+      overflow-y: auto;
+      overflow-x: auto;
+      max-height: calc(600px - 50px);
+    }
+
+    #codeEditor {
+      display: none;
     }
 
     .terminal-container {
+      background: #212529;
+      color: #fff;
+      padding: 1rem;
+      border-radius: 10px;
       flex: 1;
-      background-color: #212529;
-      color: #ffffff;
-      padding: 15px;
-      margin-top: 15px;
-      border-radius: 5px;
+      position: relative;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
       overflow-y: auto;
-      resize: vertical;
-      min-height: 100px;
     }
 
-    .terminal-container p {
-      margin: 0;
+    .terminal-content {
+      margin-right: 70px;
+      font-size: 0.9rem;
+      max-height: 200px;
+      overflow-y: auto;
+      word-wrap: break-word;
     }
 
-    /* Buttons */
+    #copyTerminal {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: #ff4d4d;
+      border: none;
+      padding: 5px 10px;
+      border-radius: 5px;
+      color: #fff;
+    }
+
+    #copyTerminal:hover {
+      background: #e03e3e;
+    }
+
     .button-container {
-      margin-top: 15px;
       display: flex;
       gap: 10px;
       justify-content: flex-end;
+      flex-wrap: wrap;
     }
 
-    .btn-ai {
-      background-color: #17a2b8;
-      color: white;
+    .btn-custom {
+      padding: 0.5rem 1rem;
+      border-radius: 50px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      border: none;
     }
 
-    .btn-ai:hover {
-      background-color: #138496;
+    .btn-ai { background: #17a2b8; }
+    .btn-ai:hover { background: #138496; }
+    .btn-syntax { background: #f0ad4e; color: #1a1a1a; }
+    .btn-syntax:hover { background: #e0a800; }
+    .btn-run { background: #28a745; }
+    .btn-run:hover { background: #218838; }
+    .btn-submit { background: #ff4d4d; }
+    .btn-submit:hover { background: #e03e3e; }
+    .btn-history { background: #6c757d; }
+    .btn-history:hover { background: #5a6268; }
+
+    .spinner {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      border-top-color: #fff;
+      animation: spin 1s ease-in-out infinite;
+      margin-left: 5px;
     }
 
-    .btn-syntax {
-      background-color: #ffc107;
-      color: #212529;
+    @keyframes spin {
+      to { transform: rotate(360deg); }
     }
 
-    .btn-syntax:hover {
-      background-color: #e0a800;
+    .history-panel {
+      position: fixed;
+      top: 0;
+      right: -50vw;
+      width: 50vw;
+      height: 100vh;
+      background: #212529;
+      padding: 2rem;
+      box-shadow: -5px 0 15px rgba(0, 0, 0, 0.3);
+      transition: right 0.3s ease;
+      overflow-y: auto;
+      overflow-x: hidden;
+      color: #fff;
+      z-index: 1000;
     }
 
-    .btn-run {
-      background-color: #28a745;
-      color: white;
+    .history-panel.active {
+      right: 0;
     }
 
-    .btn-run:hover {
-      background-color: #218838;
-    }
-
-    .btn-submit {
-      background-color: #007bff;
-      color: white;
-    }
-
-    .btn-submit:hover {
-      background-color: #0056b3;
-    }
-
-    /* History Modal */
-    .modal-body pre {
-      background-color: #212529;
-      color: #ffffff;
-      padding: 10px;
-      border-radius: 5px;
-      white-space: pre-wrap;
+    .history-panel h4 {
+      color: #ff4d4d;
+      margin-bottom: 1rem;
     }
 
     .history-entry {
-      margin-bottom: 20px;
-      padding: 10px;
-      background-color: #f8f9fa;
-      border-radius: 5px;
+      background: rgba(255, 255, 255, 0.1);
+      padding: 1rem;
+      border-radius: 8px;
+      margin-bottom: 1rem;
+      cursor: pointer;
     }
-    .terminal-container {
-  flex: 1;
-  background-color: #212529;
-  color: #ffffff;
-  padding: 15px;
-  margin-top: 15px;
-  border-radius: 5px;
-  overflow-y: auto;
-  resize: vertical;
-  min-height: 100px;
-  position: relative;
-}
 
-#copyTerminal {
-  background-color: #6c757d;
-  border: none;
-  padding: 5px 10px;
-  font-size: 12px;
-  position: absolute;
-  top: 10px;
-  right: 10px;
-}
+    .history-entry:hover {
+      background: rgba(255, 255, 255, 0.15);
+    }
 
-#copyTerminal:hover {
-  background-color: #5a6268;
-}
+    #closeHistory {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: #ff4d4d;
+      border: none;
+      padding: 5px 10px;
+      border-radius: 5px;
+      color: #fff;
+      cursor: pointer;
+      font-size: 1rem;
+    }
 
-.terminal-content {
-  margin-right: 80px;
-}
+    #closeHistory:hover {
+      background: #e03e3e;
+    }
 
-.terminal-content[contenteditable="true"] {
-  outline: none; /* Remove outline when editable */
-}
+    .history-panel #submissionDetail {
+      margin-top: 1rem;
+    }
 
+    .history-panel #submissionCode {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 1rem;
+      border-radius: 8px;
+      margin-bottom: 1rem;
+    }
+
+    .history-panel #submissionCode pre {
+      margin: 0;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      color: #fff;
+    }
+
+    .history-panel #testCaseResults {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 1rem;
+      border-radius: 8px;
+    }
+
+    .history-panel #testCaseResults p {
+      margin: 0.5rem 0;
+    }
+
+    .history-panel #testCaseResults .passed {
+      color: #28a745;
+    }
+
+    .history-panel #testCaseResults .failed {
+      color: #ff4d4d;
+    }
+
+    .stopwatch {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .stopwatch i {
+      color: #ff4d4d;
+      font-size: 1.2rem;
+    }
+
+    .stopwatch span {
+      font-size: 1rem;
+      color: #fff;
+    }
+
+    @media (max-width: 1024px) {
+      .main-container {
+        flex-direction: column;
+        margin: 1rem auto;
+      }
+
+      .left-panel,
+      .right-panel {
+        width: 100%;
+      }
+
+      .history-panel {
+        width: 100vw;
+        right: -100vw;
+      }
+    }
+
+    @media (max-width: 576px) {
+      .left-panel .problem-header strong {
+        font-size: 1.5rem;
+      }
+
+      .button-container {
+        justify-content: center;
+      }
+
+      .btn-custom {
+        width: 100%;
+        padding: 0.4rem 0.8rem;
+        font-size: 0.8rem;
+      }
+    }
   </style>
 </head>
 
 <body>
-  <!-- Top Branding -->
-  <div class="branding">Just Code</div>
+  <%- include('partials/nav') %>
 
-  <!-- Navbar -->
-  <nav class="navbar navbar-expand-lg">
-    <div class="container-fluid">
-      <div class="navbar-nav">
-        <a class="nav-link" href="/submissions">Submissions</a>
-        <a class="nav-link" href="/problems">Problem Set</a>
-      </div>
-      <div class="navbar-nav ms-auto">
-        <% if (user._id) { %>
-          <div class="dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="profileDropdown" role="button" data-bs-toggle="dropdown"
-              aria-expanded="false">
-              <i class="fas fa-user-circle"></i>
-            </a>
-            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
-              <li><a class="dropdown-item" href="/me">Me</a></li>
-              <li><a class="dropdown-item" href="/update-profile">Update Profile</a></li>
-              <!-- <li><a class="dropdown-item" href="#" id="showHistory">History</a></li> -->
-              <li><a class="dropdown-item" href="/logout">Logout</a></li>
-            </ul>
-          </div>
-          <% } else { %>
-            <a class="nav-link" href="/login"><i class="fas fa-user-circle"></i> Sign In</a>
-            <% } %>
-      </div>
-    </div>
-  </nav>
-
-  <!-- Main Container -->
   <div class="main-container">
     <!-- Left Panel: Problem Details -->
     <div class="left-panel">
-      <h3>
-        <%= problem.title %>
-      </h3>
-      <p class="mt-3">
-        <%= problem.description %>
-      </p>
+      <div class="problem-header">
+        <strong><%= problem.id + ". " + problem.title %></strong>
+      </div>
+      <p><%= problem.description %></p>
 
       <div class="example-section">
         <h5>Examples:</h5>
         <ul class="testcase-list">
-          <% problem.examples.forEach(example=> { %>
-            <li>
-              <strong>Input:</strong>
-              <%= example.input %>
-                <br><strong>Output:</strong>
-                <%= example.output %>
-            </li>
-            <% }); %>
+          <% problem.examples.forEach(example => { %>
+            <li><strong>Input:</strong> <%= example.input %><br><strong>Output:</strong> <%= example.output %></li>
+          <% }); %>
         </ul>
       </div>
 
       <div class="testcase-section">
         <h5>Test Cases:</h5>
         <ul class="testcase-list">
-          <% problem.run_test.forEach(test=> { %>
-            <li>
-              <strong>Input:</strong>
-              <%= test.input.join(" ") %>
-              <br><strong>Expected Output:</strong> <%= test.output %>
-            </li>
+          <% problem.run_test.forEach(test => { %>
+            <li><strong>Input:</strong> <%= test.input.join(" ") %><br><strong>Expected Output:</strong> <%= test.output %></li>
           <% }); %>
         </ul>
       </div>
 
-      <div class=" example-section">
-                <h5>Constraints:</h5>
-                <p>
-                  <%= problem.constraints %>
-                </p>
+      <div class="example-section">
+        <h5>Constraints:</h5>
+        <p><%= problem.constraints %></p>
       </div>
 
+      <% if (problem.input_format) { %>
       <div class="input-format-section">
-        <h5>Input Format</h5>
-        <p>
-          <%= problem.input_format %>
-        </p>
+        <h5>Input Format:</h5>
+        <p><%= problem.input_format %></p>
       </div>
-
+      <% } %>
     </div>
 
     <!-- Right Panel: Code Editor + Terminal -->
     <div class="right-panel">
       <div class="code-editor-container">
-        <select class="form-select mb-2" id="language" style="width: 150px;">
-          <option value="javascript" <% if (userStatus.language==='javascript' ) { %>selected<% } %>>JavaScript</option>
-          <option value="python" <% if (userStatus.language==='python' ) { %>selected<% } %>>Python</option>
-          <option value="java" <% if (userStatus.language==='java' ) { %>selected<% } %>>Java</option>
-          <option value="cpp" <% if (userStatus.language==='cpp' ) { %>selected<% } %>>C++</option>
-          <option value="c" <% if (userStatus.language==='c' ) { %>selected<% } %>>C</option>
-        </select>
-        <textarea id="codeEditor"><%= '' %></textarea>
+        <div class="editor-header">
+          <select class="form-select" id="language" style="width: 150px; background: #2a2a2a; color: #fff; border: none;">
+            <option value="javascript">JavaScript</option>
+            <option value="python">Python</option>
+            <option value="java">Java</option>
+            <option value="cpp">C++</option>
+            <option value="c">C</option>
+          </select>
+          <div class="stopwatch">
+            <i class="fas fa-stopwatch"></i>
+            <span id="stopwatchTime">00:00:00</span>
+            <button class="btn-custom" id="toggleStopwatch">Start</button>
+            <button class="btn-custom" id="resetStopwatch">Reset</button>
+          </div>
+        </div>
+        <textarea id="codeEditor"></textarea>
       </div>
 
       <div class="terminal-container" id="terminalOutput">
         <div class="terminal-content" id="terminalContent">
           <p>Terminal output will appear here...</p>
         </div>
-        <button class="btn btn-sm btn-secondary" id="copyTerminal" title="Copy to clipboard">
+        <button class="btn btn-sm" id="copyTerminal" title="Copy to clipboard">
           <i class="fas fa-copy"></i> Copy
         </button>
       </div>
 
       <div class="button-container">
-        <button class="btn btn-ai" id="askAI">Ask AI</button>
-        <button class="btn btn-syntax" id="correctSyntax">Correct Syntax</button>
-        <button class="btn btn-run" id="runCode">Run Code</button>
-        <button class="btn btn-submit" id="submitCode">Submit Code</button>
+        <button class="btn-custom btn-ai" id="askAI">Ask AI</button>
+        <button class="btn-custom btn-syntax" id="correctSyntax">Correct Syntax</button>
+        <button class="btn-custom btn-run" id="runCode">Run Code <span class="spinner" style="display: none;"></span></button>
+        <button class="btn-custom btn-submit" id="submitCode">Submit Code <span class="spinner" style="display: none;"></span></button>
+        <button class="btn-custom btn-history" id="showHistory">History</button>
       </div>
     </div>
   </div>
 
-  <!-- History Modal -->
-  <!-- <div class="modal fade" id="historyModal" tabindex="-1" aria-labelledby="historyModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="historyModalLabel">Submission History</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body" id="historyContent">
-          <p>Loading history...</p>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        </div>
-      </div>
+  <!-- Submission History Panel -->
+  <div class="history-panel" id="historyPanel">
+    <h4>Submission History</h4>
+    <button id="closeHistory" title="Close"><i class="fas fa-times"></i></button>
+    <div id="historyContent">
+      <p>Loading submissions...</p>
     </div>
-  </div> -->
+    <div id="submissionDetail" style="display: none;">
+      <h5>Submission Details</h5>
+      <button id="backToList" class="btn-custom">Back</button>
+      <div id="submissionCode">
+        <pre id="codeContent"></pre>
+        <button id="copyCode" class="btn-custom">Copy Code</button>
+      </div>
+      <div id="testCaseResults"></div>
+    </div>
+  </div>
 
-  <!-- CodeMirror JS -->
+  <!-- Scripts -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/javascript/javascript.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/python/python.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/clike/clike.min.js"></script>
-
-  <!-- Bootstrap JS -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/addon/hint/show-hint.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/addon/hint/javascript-hint.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/addon/hint/anyword-hint.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
   <script>
-    document.addEventListener("DOMContentLoaded", function () {
+    document.addEventListener("DOMContentLoaded", async function () {
       const languageMap = {
         cpp: { id: 54, defaultCode: "#include <iostream>\nusing namespace std;\n\nint main() {\n\tcout << \"Hello World!\";\n\treturn 0;\n}" },
         java: { id: 91, defaultCode: `public class Main {\n    public static void main(String[] args) {\n        System.out.println("Hello World!");\n    }\n}` },
         python: { id: 71, defaultCode: "print(\"Hello World!\")" },
         javascript: { id: 102, defaultCode: "console.log(\"Hello World!\");" },
-        c: { id: 52, defaultCode: "#include<stdio.h>\nint main()\n{\n    printf(\"Hello World!\");\n    return 0;\n}" },
+        c: { id: 52, defaultCode: "#include<stdio.h>\nint main()\n{\n    printf(\"Hello world\");\n    return 0;\n}" },
       };
 
-      // Initialize CodeMirror
+      // Initialize CodeMirror with default value
       const editor = CodeMirror.fromTextArea(document.getElementById("codeEditor"), {
         mode: "javascript",
-        theme: "dracula",
+        theme: "monokai",
         lineNumbers: true,
+        extraKeys: { "Ctrl-Space": "autocomplete" },
+        hintOptions: { hint: CodeMirror.hint.anyword },
+        lineWrapping: true,
+        scrollPastEnd: false,
+        value: languageMap["javascript"].defaultCode.trim() // Set initial value
       });
 
-      // Set editor mode
       function setEditorMode(language) {
-        const modeMap = {
-          javascript: "javascript",
-          python: "python",
-          java: "text/x-java",
-          cpp: "text/x-c++src",
-          c: "text/x-csrc",
-        };
+        const modeMap = { javascript: "javascript", python: "python", java: "text/x-java", cpp: "text/x-c++src", c: "text/x-csrc" };
         editor.setOption("mode", modeMap[language] || "javascript");
-        editor.setValue(languageMap[language].defaultCode.trim());
-
       }
 
       const languageSelect = document.getElementById("language");
       let currentLanguage = languageSelect.value;
-      setEditorMode(currentLanguage);
-      const userCode = "<%= userStatus.code || '' %>";
 
-      function decodeHTML(html) {
-        const doc = new DOMParser().parseFromString(html, "text/html");
-        return doc.documentElement.textContent;
+      // Load last submission or set default code
+      const userId = "<%= user?._id || '' %>";
+      const problemId = "<%= problem._id %>";
+      if (userId && problemId) {
+        try {
+          const response = await fetch(`/submission-history?userId=${userId}&problemId=${problemId}`);
+          if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+          const history = await response.json();
+          if (history && history.length > 0) {
+            const lastSubmission = history[0];
+            editor.setValue(lastSubmission.code.trim());
+            setEditorMode(lastSubmission.language);
+            languageSelect.value = lastSubmission.language;
+            currentLanguage = lastSubmission.language;
+          } else {
+            setEditorMode(currentLanguage);
+            editor.setValue(languageMap[currentLanguage].defaultCode.trim());
+          }
+        } catch (error) {
+          console.error('Error loading last submission:', error);
+          setEditorMode(currentLanguage);
+          editor.setValue(languageMap[currentLanguage].defaultCode.trim());
+          // Optionally display error in terminal
+          document.getElementById("terminalContent").innerHTML = `<pre>Error loading submission: ${error.message}</pre>`;
+        }
+      } else {
+        setEditorMode(currentLanguage);
+        editor.setValue(languageMap[currentLanguage].defaultCode.trim());
       }
 
-      const initialCode = decodeHTML(userCode).slice(1, -1) || languageMap[currentLanguage].defaultCode;
-      editor.setValue(initialCode);
-
-      // Handle language change
       languageSelect.addEventListener("change", function () {
         const selectedLanguage = this.value;
         setEditorMode(selectedLanguage);
@@ -452,237 +523,338 @@
         currentLanguage = selectedLanguage;
       });
 
-// Terminal setup
-const terminal = document.getElementById("terminalOutput");
-const terminalContent = document.getElementById("terminalContent");
-let isAskingAI = false;
+      // Terminal Setup
+      const terminalContent = document.getElementById("terminalContent");
+      let isAskingAI = false;
 
-// Function to update terminal content
-function updateTerminal(message) {
-  terminalContent.contentEditable = false;
-  terminalContent.innerHTML = `<p>${message}</p>`;
-  isAskingAI = false;
-}
-
-// Function to enable terminal input
-function enableTerminalInput() {
-  terminalContent.contentEditable = true;
-  terminalContent.innerHTML = '<p id="placeholder" style="color: gray; opacity: 0.6;">Type your query here and press Enter...</p>';
-  terminalContent.focus();
-  isAskingAI = true;
-
-  terminalContent.addEventListener("input", function removePlaceholder() {
-    let placeholder = document.getElementById("placeholder");
-    if (placeholder) {
-      placeholder.remove();
-    }
-    terminalContent.removeEventListener("input", removePlaceholder);
-  }, { once: true });
-}
-
-// Initial terminal state
-updateTerminal("Terminal output will appear here...");
-
-// Ask AI button
-document.getElementById("askAI").addEventListener("click", function () {
-  enableTerminalInput();
-});
-
-// Handle Enter key in terminal for AI queries
-terminalContent.addEventListener("keydown", async function (event) {
-  if (isAskingAI && event.key === "Enter") {
-    event.preventDefault();
-    const query = terminalContent.textContent.trim();
-    if (query && query !== "Type your query here and press Enter...") {
-      updateTerminal("Processing your query...");
-
-      try {
-        const code = editor.getValue();
-        const language = languageSelect.value;
-        const problemDescription = "<%= problem.description %>";
-
-        const response = await fetch("/ai/ask-ai", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ code, language, problemDescription, query }),
-        });
-
-        const result = await response.json();
-        if (result.success) {
-          updateTerminal(result.suggestion || "No suggestion provided");
-        } else if (result.error === "server is busy") {
-          updateTerminal("The server is busy right now. Please try again in a few moments.");
-        } else {
-          updateTerminal("Error getting AI assistance: " + (result.error || "Unknown error"));
-        }
-      } catch (error) {
-        updateTerminal("Error communicating with AI service: " + error.message);
-      }
-    }
-  }
-});
-
-// Copy Terminal button
-document.getElementById("copyTerminal").addEventListener("click", function () {
-  const contentToCopy = terminalContent.textContent.trim();
-  if (contentToCopy) {
-    navigator.clipboard.writeText(contentToCopy)
-      .then(() => {
-        const originalText = this.innerHTML;
-        this.innerHTML = '<i class="fas fa-check"></i> Copied!';
-        setTimeout(() => {
-          this.innerHTML = '<i class="fas fa-copy"></i> Copy';
-        }, 2000);
-      })
-      .catch(err => {
-        updateTerminal("Failed to copy: " + err.message);
-      });
-  } else {
-    updateTerminal("Nothing to copy!");
-  }
-});
-
-      // Correct Syntax button
-      document.getElementById("correctSyntax").addEventListener("click", async function () {
-        const code = editor.getValue();
-        const language = languageSelect.value;
-
-        try {
-          updateTerminal("Checking and correcting syntax using AI...");
-
-          const response = await fetch("/ai/correct-syntax", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ code, language }),
-          });
-
-          const result = await response.json();
-          if (result.success) {
-            if (result.correctedCode) {
-              editor.setValue(result.correctedCode);
-              updateTerminal("Syntax corrected successfully using AI!");
+      function updateTerminal(message) {
+        terminalContent.contentEditable = false;
+        const maxLineLength = 80;
+        let formattedMessage = "";
+        if (message.toLowerCase().includes("error") && message.length > maxLineLength) {
+          const words = message.split(" ");
+          let currentLine = "";
+          words.forEach(word => {
+            if ((currentLine + word).length > maxLineLength) {
+              formattedMessage += currentLine.trim() + "\n";
+              currentLine = word + " ";
             } else {
-              updateTerminal("No syntax errors found in the code!");
+              currentLine += word + " ";
             }
-          } else {
-            updateTerminal("Error correcting syntax: " + (result.error || "Unknown error"));
-          }
-        } catch (error) {
-          updateTerminal("Error communicating with syntax checker: " + error.message);
+          });
+          formattedMessage += currentLine.trim();
+        } else {
+          formattedMessage = message;
         }
-      });
+        const maxTotalLength = 1000;
+        formattedMessage = formattedMessage.length > maxTotalLength 
+          ? formattedMessage.substring(0, maxTotalLength) + "..." 
+          : formattedMessage;
+        terminalContent.innerHTML = `<pre>${formattedMessage}</pre>`;
+        isAskingAI = false;
+      }
 
-      // Run Code button
+      function enableTerminalInput() {
+        terminalContent.contentEditable = true;
+        terminalContent.innerHTML = '<p style="color: #bbb;">Type your query here and press Enter...</p>';
+        terminalContent.focus();
+        isAskingAI = true;
+
+        terminalContent.addEventListener("click", function removePlaceholder() {
+          if (terminalContent.innerHTML === '<p style="color: #bbb;">Type your query here and press Enter...</p>') {
+            terminalContent.innerHTML = "";
+          }
+        }, { once: true });
+      }
+
+      // Loading Indicators
+      function toggleLoading(button, isLoading) {
+        const spinner = button.querySelector('.spinner');
+        if (isLoading) {
+          button.disabled = true;
+          spinner.style.display = 'inline-block';
+        } else {
+          button.disabled = false;
+          spinner.style.display = 'none';
+        }
+      }
+
+      // Run Code
       document.getElementById("runCode").addEventListener("click", async function () {
+        toggleLoading(this, true);
         const code = editor.getValue();
         const language = languageSelect.value;
         const problemId = "<%= problem._id %>";
-
         try {
           const response = await fetch("/run-code", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ code, language, problemId }),
           });
-
           const result = await response.json();
           if (result.testCaseResults) {
-            let output = result.testCaseResults.map((tc, i) =>
-              `Test Case ${i + 1}: ${tc.passed ? "Passed" : "Failed"}<br>` +
-              `Input: ${tc.input || "N/A"}<br>` +
-              `Expected: ${tc.expectedOutput || "N/A"}<br>` +
-              `Actual: ${tc.actualOutput || "N/A"}<br>` +
-              (tc.error ? `Error: ${tc.error}<br>` : "")
-            ).join("<hr>");
-            updateTerminal(output);
+            let output = "Test Case Results:\n\n";
+            result.testCaseResults.forEach((tc, i) => {
+              output += `Test Case ${i + 1}:\n` +
+                        `  Status: ${tc.passed ? "Passed" : "Failed"}\n` +
+                        `  Input: ${tc.input || "N/A"}\n` +
+                        `  Expected Output: ${tc.expectedOutput || "N/A"}\n` +
+                        `  Actual Output: ${tc.actualOutput || "N/A"}\n` +
+                        (tc.error ? `  Error: ${tc.error}\n` : "") +
+                        "------------------------\n";
+            });
+            updateTerminal(output.trim());
           } else {
-            updateTerminal("Unknown error occurred: " + JSON.stringify(result));
+            updateTerminal("Error: " + JSON.stringify(result));
           }
         } catch (error) {
           updateTerminal("Error running code: " + error.message);
+        } finally {
+          toggleLoading(this, false);
         }
       });
 
-      // Submit Code button
+      // Submit Code
       document.getElementById("submitCode").addEventListener("click", async function () {
+        toggleLoading(this, true);
+        const userId = "<%= user?._id || '' %>";
+        if (!userId) {
+          updateTerminal("Error: You must be logged in to submit code.");
+          toggleLoading(this, false);
+          return;
+        }
         const code = editor.getValue();
         const language = languageSelect.value;
-        const userId = "<%= user._id || '' %>";
         const problemId = "<%= problem._id %>";
-
         try {
           const response = await fetch("/submit-solution", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ code, language, userId, problemId }),
           });
-
           const result = await response.json();
           if (result.testCaseResults) {
-            let output = result.testCaseResults.map((tc, i) =>
-              `Test Case ${i + 1}: ${tc.passed ? "Passed" : "Failed"}<br>` +
-              `Input: ${tc.input || "N/A"}<br>` +
-              `Expected: ${tc.expectedOutput || "N/A"}<br>` +
-              `Actual: ${tc.actualOutput || "N/A"}<br>` +
-              (tc.error ? `Error: ${tc.error}<br>` : "")
-            ).join("<hr>");
-            output += `<br>Submission Status: ${result.submissionStatus || "Unknown"}`;
-            updateTerminal(output);
+            let output = "Submission Results:\n\n";
+            result.testCaseResults.forEach((tc, i) => {
+              output += `Test Case ${i + 1}:\n` +
+                        `  Status: ${tc.passed ? "Passed" : "Failed"}\n` +
+                        `  Input: ${tc.input || "N/A"}\n` +
+                        `  Expected Output: ${tc.expectedOutput || "N/A"}\n` +
+                        `  Actual Output: ${tc.actualOutput || "N/A"}\n` +
+                        (tc.error ? `  Error: ${tc.error}\n` : "") +
+                        "------------------------\n";
+            });
+            output += `\nFinal Status: ${result.submissionStatus || "Unknown"}`;
+            updateTerminal(output.trim());
           } else {
-            updateTerminal("Unknown error occurred: " + JSON.stringify(result));
+            updateTerminal("Error: " + JSON.stringify(result));
           }
         } catch (error) {
           updateTerminal("Error submitting code: " + error.message);
+        } finally {
+          toggleLoading(this, false);
         }
       });
 
-      // Show History button
-      document.getElementById("showHistory")?.addEventListener("click", async function () {
-        const userId = "<%= user._id || '' %>";
-        try {
-          const response = await fetch(`/submission-history?userId=${userId}`, {
-            method: "GET",
-            headers: { "Content-Type": "application/json" },
-          });
+      // Ask AI
+      document.getElementById("askAI").addEventListener("click", function () {
+        enableTerminalInput();
+      });
 
-          const history = await response.json();
-          const historyContent = document.getElementById("historyContent");
-
-          if (history && history.length > 0) {
-            let historyHtml = "";
-            history.forEach((submission, index) => {
-              const testCaseResults = submission.testCaseResults || [];
-              historyHtml += `
-                <div class="history-entry">
-                  <h6>Submission ${index + 1} - ${new Date(submission.timestamp).toLocaleString()}</h6>
-                  <p><strong>Problem:</strong> ${submission.problemTitle || "Unknown"}</p>
-                  <p><strong>Language:</strong> ${submission.language}</p>
-                  <pre>${submission.code}</pre>
-                  <p><strong>Test Cases:</strong></p>
-                  ${testCaseResults.length > 0 ? testCaseResults.map((tc, i) => `
-                    <p>Test Case ${i + 1}: <span class="${tc.passed ? "text-success" : "text-danger"}">${tc.passed ? "Passed" : "Failed"}</span></p>
-                    <p>Input: ${tc.input || "N/A"}</p>
-                    <p>Expected: ${tc.expectedOutput || "N/A"}</p>
-                    <p>Actual: ${tc.actualOutput || "N/A"}</p>
-                    ${tc.error ? `<p class="text-danger">Error: ${tc.error}</p>` : ""}
-                    <hr>
-                  `).join("") : "<p>No test case results available.</p>"}
-                  <p><strong>Status:</strong> ${submission.submissionStatus || "Unknown"}</p>
-                </div>
-              `;
-            });
-            historyContent.innerHTML = historyHtml;
-          } else {
-            historyContent.innerHTML = "<p>No submission history available.</p>";
+      terminalContent.addEventListener("keydown", async function (event) {
+        if (isAskingAI && event.key === "Enter" && !event.shiftKey) {
+          event.preventDefault();
+          const query = terminalContent.textContent.trim();
+          if (!query || query === "Type your query here and press Enter...") {
+            updateTerminal("Error: Please enter a valid query.");
+            return;
           }
-
-          const modal = new bootstrap.Modal(document.getElementById("historyModal"));
-          modal.show();
-        } catch (error) {
-          document.getElementById("historyContent").innerHTML = `<p class="text-danger">Error loading history: ${error.message}</p>`;
-          const modal = new bootstrap.Modal(document.getElementById("historyModal"));
-          modal.show();
+          updateTerminal("Asking AI...");
+          const code = editor.getValue();
+          const language = languageSelect.value;
+          const problemDescription = "<%= problem.description %>";
+          try {
+            const response = await fetch("/ai/ask-ai", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ code, language, problemDescription, query }),
+            });
+            const result = await response.json();
+            if (result.success) {
+              updateTerminal(result.suggestion || "No suggestion provided by AI.");
+            } else {
+              updateTerminal("Error: " + (result.error || "Unknown AI error"));
+            }
+          } catch (error) {
+            updateTerminal("Error contacting AI: " + error.message);
+          }
         }
+      });
+
+      // Correct Syntax
+      document.getElementById("correctSyntax").addEventListener("click", async function () {
+        const code = editor.getValue();
+        const language = languageSelect.value;
+        try {
+          updateTerminal("Correcting syntax...");
+          const response = await fetch("/ai/correct-syntax", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ code, language }),
+          });
+          const result = await response.json();
+          if (result.success) {
+            if (result.correctedCode) {
+              editor.setValue(result.correctedCode);
+              updateTerminal("Syntax corrected!");
+            } else {
+              updateTerminal("No syntax errors found!");
+            }
+          } else {
+            updateTerminal("Error: " + (result.error || "Unknown error"));
+          }
+        } catch (error) {
+          updateTerminal("Error: " + error.message);
+        }
+      });
+
+      // Submission History
+      const historyPanel = document.getElementById("historyPanel");
+      document.getElementById("showHistory").addEventListener("click", async function (event) {
+        event.stopPropagation();
+        const historyContent = document.getElementById("historyContent");
+        const submissionDetail = document.getElementById("submissionDetail");
+        historyPanel.classList.add("active");
+        historyContent.style.display = "block";
+        submissionDetail.style.display = "none";
+
+        if (!userId) {
+          historyContent.innerHTML = "<p>Error: You must be logged in to view submission history.</p>";
+          return;
+        }
+
+        try {
+          const response = await fetch(`/submission-history?userId=${userId}&problemId=${problemId}`);
+          const history = await response.json();
+          if (history && history.length > 0) {
+            let html = history.map(sub => `
+              <div class="history-entry" data-submission-id="${sub._id}">
+                <p><strong>Time:</strong> ${new Date(sub.submittedAt).toLocaleString()}</p>
+                <p><strong>Status:</strong> ${sub.status}</p>
+                <p><strong>Language:</strong> ${sub.language}</p>
+              </div>
+            `).join("");
+            historyContent.innerHTML = html;
+
+            document.querySelectorAll(".history-entry").forEach(entry => {
+              entry.addEventListener("click", function (event) {
+                event.stopPropagation();
+                const submissionId = this.getAttribute("data-submission-id");
+                const submission = history.find(sub => sub._id === submissionId);
+                showSubmissionDetail(submission);
+              });
+            });
+          } else {
+            historyContent.innerHTML = "<p>No submissions yet.</p>";
+          }
+        } catch (error) {
+          historyContent.innerHTML = `<p>Error: ${error.message}</p>`;
+        }
+      });
+
+      document.getElementById("closeHistory").addEventListener("click", function (event) {
+        event.stopPropagation();
+        historyPanel.classList.remove("active");
+      });
+
+      function showSubmissionDetail(submission) {
+        const historyContent = document.getElementById("historyContent");
+        const submissionDetail = document.getElementById("submissionDetail");
+        const codeContent = document.getElementById("codeContent");
+        const testCaseResults = document.getElementById("testCaseResults");
+
+        historyContent.style.display = "none";
+        submissionDetail.style.display = "block";
+
+        codeContent.textContent = submission.code;
+
+        let testCaseHtml = submission.testCaseResults.map((tc, i) => `
+          <p><strong>Test Case ${i + 1}:</strong> 
+            <span class="${tc.passed ? 'passed' : 'failed'}">${tc.passed ? 'Passed' : 'Failed'}</span></p>
+          <p>Input: ${tc.input || 'N/A'}</p>
+          <p>Expected Output: ${tc.expectedOutput || 'N/A'}</p>
+          <p>Actual Output: ${tc.actualOutput || 'N/A'}</p>
+          ${tc.error ? `<p>Error: ${tc.error}</p>` : ''}
+          <hr>
+        `).join("");
+        testCaseResults.innerHTML = testCaseHtml || "<p>No test case results available.</p>";
+
+        document.getElementById("copyCode").onclick = function () {
+          navigator.clipboard.writeText(submission.code).then(() => {
+            this.textContent = "Copied!";
+            setTimeout(() => this.textContent = "Copy Code", 2000);
+          });
+        };
+      }
+
+      document.getElementById("backToList").addEventListener("click", function (event) {
+        event.stopPropagation();
+        document.getElementById("historyContent").style.display = "block";
+        document.getElementById("submissionDetail").style.display = "none";
+      });
+
+      // Close history panel on outside click
+      document.addEventListener("click", function (event) {
+        if (historyPanel.classList.contains("active") && !historyPanel.contains(event.target)) {
+          historyPanel.classList.remove("active");
+        }
+      });
+
+      // Stopwatch
+      let stopwatchInterval = null;
+      let time = 0;
+      const stopwatchTime = document.getElementById("stopwatchTime");
+      const toggleStopwatch = document.getElementById("toggleStopwatch");
+      const resetStopwatch = document.getElementById("resetStopwatch");
+
+      function updateStopwatch() {
+        const hours = Math.floor(time / 3600).toString().padStart(2, '0');
+        const minutes = Math.floor((time % 3600) / 60).toString().padStart(2, '0');
+        const seconds = (time % 60).toString().padStart(2, '0');
+        stopwatchTime.textContent = `${hours}:${minutes}:${seconds}`;
+      }
+
+      toggleStopwatch.addEventListener("click", function () {
+        if (stopwatchInterval) {
+          clearInterval(stopwatchInterval);
+          stopwatchInterval = null;
+          this.textContent = "Start";
+        } else {
+          stopwatchInterval = setInterval(() => {
+            time++;
+            updateStopwatch();
+          }, 1000);
+          this.textContent = "Stop";
+        }
+      });
+
+      resetStopwatch.addEventListener("click", function () {
+        if (stopwatchInterval) {
+          clearInterval(stopwatchInterval);
+          stopwatchInterval = null;
+          toggleStopwatch.textContent = "Start";
+        }
+        time = 0;
+        updateStopwatch();
+      });
+
+      // Copy Terminal
+      document.getElementById("copyTerminal").addEventListener("click", function () {
+        const content = terminalContent.textContent.trim();
+        navigator.clipboard.writeText(content).then(() => {
+          this.innerHTML = '<i class="fas fa-check"></i> Copied!';
+          setTimeout(() => this.innerHTML = '<i class="fas fa-copy"></i> Copy', 2000);
+        });
       });
     });
   </script>
