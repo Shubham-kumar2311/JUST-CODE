@@ -162,7 +162,7 @@ const extractSuggestionFromResponse = (responseText) => {
 // Controller for handling "Ask AI" functionality
 exports.askAI = async (req, res) => {
     try {
-        const { code, language, problemDescription, query } = req.body;
+        const { code, language, problemDescription, query, input_form } = req.body;
 
         if (!query) {
             return res.status(400).json({
@@ -173,6 +173,7 @@ exports.askAI = async (req, res) => {
 
         const prompt = `
       Problem: ${problemDescription}
+      Input Format: ${input_form}
       Language: ${language}
       Current Code: ${code}
       User Query: ${query}

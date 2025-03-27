@@ -13,12 +13,12 @@ async function handleUserSignup(req, res) {
   try {
     const existingEmail = await User.findOne({ email });
     if (existingEmail) {
-      return res.status(400).json({ message: "Email is already registered." });
+      return res.status(409).json({ message: "Email is already registered." });
     }
 
     const existingUsername = await User.findOne({ username });
     if (existingUsername) {
-      return res.status(400).json({ message: "Username is already taken." });
+      return res.status(409).json({ message: "Username is already taken." });
     }
 
     const newUser = new User({ username, email, password });
@@ -26,7 +26,7 @@ async function handleUserSignup(req, res) {
 
     const token = setUser(newUser);
     res.cookie("uid", token, { httpOnly: true, secure: process.env.NODE_ENV === "production" });
-    return res.status(201).redirect("/problems");
+    return res.status(201).json({ redirect: "/problems" });
   } catch (error) {
     console.error("Error signing up user:", error);
     return res.status(500).json({ message: "Internal server error." });
@@ -51,7 +51,12 @@ async function handleUserLogin(req, res) {
     }
 
     const token = setUser(user);
-    res.cookie("uid", token, { httpOnly: true, secure: process.env.NODE_ENV === "production" });
+    
+    res.cookie("uid", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days in milliseconds
+    });
 
     // Manually set req.user for this request
     req.user = user; // Directly set req.user to the user object

@@ -681,11 +681,13 @@
           const code = editor.getValue();
           const language = languageSelect.value;
           const problemDescription = "<%= problem.description %>";
+          const input_form = "<%= problem.input_form %>";
+
           try {
             const response = await fetch("/ai/ask-ai", {
               method: "POST",
               headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ code, language, problemDescription, query }),
+              body: JSON.stringify({ code, language, problemDescription, query, input_form }),
             });
             const result = await response.json();
             if (result.success) {

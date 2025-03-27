@@ -1,7 +1,7 @@
 {
   "name": "justcode",
   "version": "1.0.0",
-  "description": "A LeetCode clone for practicing coding problems",
+  "description": "An AI enabled platform for practicing coding problems",
   "main": "index.js",
   "scripts": {
     "start": "node app.js",
